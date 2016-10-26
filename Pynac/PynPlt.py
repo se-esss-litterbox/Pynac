@@ -1,3 +1,7 @@
+from bokeh.plotting import figure
+from bokeh.layouts import gridplot, column
+from bokeh.io import show
+
 class PynPlt(object):
     """
     Read data from a Dynac 'emit.plot' file, and produce the appropriate
@@ -261,7 +265,7 @@ class PynPlt(object):
         p1.circle(x, y, color="black", size=1)
 
         x, y = data['x'], data['y']
-        p2 = figure(title=b.plots[ind]['name'],
+        p2 = figure(title=self.plots[ind]['name'],
             plot_height=400,
             plot_width=400,
             x_range=data['xscale'][:2],
@@ -270,7 +274,7 @@ class PynPlt(object):
         p2.circle(x, y, color="black", size=1)
 
         x, y = data['z'], data['zp']
-        p3 = figure(title=b.plots[ind]['name'],
+        p3 = figure(title=self.plots[ind]['name'],
             plot_height=400,
             plot_width=400,
             x_range=data['zscale'][:2],

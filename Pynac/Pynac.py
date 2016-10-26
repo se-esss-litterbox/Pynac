@@ -1,4 +1,12 @@
 class Pynac(object):
+    """
+    Start a new Dynac analysis.
+
+    Example:
+        analysis = Pynac(filename)
+
+        filename is the name of a Dynac input file.
+    """
     _fieldData = {
         'INPUT': 2,
         'RDBEAM': 5,
@@ -34,6 +42,15 @@ class Pynac(object):
         self._parse()
     
     def run(self):
+        """
+        Perform the Dynac simulation.
+        This starts a Dynac process accepting input on stdin, and pipes
+        the contents of the lattice attribute to this.  The Dynac process
+        will close on exiting this method.
+
+        Example:
+            pynacAnalysis.run()
+        """
         self._startDynacProc(stdin=subp.PIPE, stdout=subp.PIPE)
         self.dynacProc.stdin.write(self.name + '\r\n') # The name field
         for ele in self.lattice:
@@ -43,15 +60,33 @@ class Pynac(object):
         return self.dynacProc.communicate()
     
     def getXinds(self, *X):
+        """
+        Return a list of integers corresponding to lattice entries matching
+        certain keywords.
+        
+        Args:
+            X*: A string containing the name of the Dynac type to be searched 
+            for or a list of such strings.
+        """
         return [i for i,x in enumerate(self.lattice) for y in X if x[0] == y]
     
     def getPlotInds(self):
+        """
+        Syntactic sugar wrapping the getXinds method.
+        Return all indices for Dynac types that result in generation of a plot.
+        """
         return self.getXinds('EMITGR','ENVEL','PROFGR')
     
     def getNumPlots(self):
         return len(self.getPlotInds()) + 2 * len(self.getXinds('ENVEL'))
     
     def setNewRDBEAMfile(self, filename):
+        """
+        Change the filename used for the RDBEAM command.
+
+        Args:
+            filename:  The name of the file to use for RDBEAM.
+        """
         self.lattice[a.getXinds('RDBEAM')[0]][1][0][0] = filename
     
     def _startDynacProc(self, stdin, stdout):

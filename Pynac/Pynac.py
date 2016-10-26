@@ -90,7 +90,7 @@ class Pynac(object):
         Args:
             filename:  The name of the file to use for RDBEAM.
         """
-        self.lattice[a.getXinds('RDBEAM')[0]][1][0][0] = filename
+        self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
     
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(

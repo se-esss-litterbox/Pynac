@@ -1,4 +1,11 @@
 class PynPlt(object):
+    """
+    Read data from a Dynac 'emit.plot' file, and produce the appropriate
+    plots in a Juptyer environment.
+
+    Uses bokeh as the plotting tool.
+    http://bokeh.pydata.org/en/latest/
+    """
     def __init__(self):
         with open('emit.plot', 'r') as file:
             self.rawData = [' '.join(line.split()) for line in file]
@@ -83,6 +90,13 @@ class PynPlt(object):
                 raise ValueError("Unknown plotType")
     
     def plot(self, ind):
+        """
+        Plot an individual dataset from those listed in the Dynac
+        input file.
+
+        Args:
+            ind: Plot the ind'th dataset
+        """
         plotType = self.plots[ind]['type']
         if plotType == 'EMITGR':
             self._plotEMITGR(ind)
@@ -92,6 +106,11 @@ class PynPlt(object):
             self._plotPROFGR(ind)
     
     def plotit(self):
+        """
+        Plot all the plots requeted in the Dynac input file.
+        This is very similar to the 'plotit' command distributed 
+        with Dynac.
+        """
         [self.plot(i) for i in range(len(self.plots))]
     
     def _getScaleNAndData(self, i, scaleStr, datStrs):

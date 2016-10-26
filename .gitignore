@@ -117,3 +117,7 @@ Pynac/MBL_F2F_field.txt
 Pynac/Spoke_F2F_field.txt
 
 *.ipynb
+
+Pynac/ESS_RFQ_out_70mA.dst.allParticles
+
+Pynac/ESS_RFQ_out_70mA.dst.fewParticles

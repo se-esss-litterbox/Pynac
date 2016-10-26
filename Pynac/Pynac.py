@@ -1,3 +1,5 @@
+import subprocess as subp
+
 class Pynac(object):
     """
     Start a new Dynac analysis.
@@ -91,7 +93,7 @@ class Pynac(object):
     
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(
-            ['./dynacv6_0','--pipe'], 
+            ['dynacv6_0','--pipe'], 
             stdin=stdin, 
             stdout=stdout,
             stderr=subp.PIPE

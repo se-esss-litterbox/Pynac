@@ -115,3 +115,5 @@ Pynac/HBL_F2F_field.txt
 Pynac/MBL_F2F_field.txt
 
 Pynac/Spoke_F2F_field.txt
+
+*.ipynb

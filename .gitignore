@@ -95,3 +95,23 @@ ENV/
 *.dst
 
 *.in
+
+*.out
+
+*.dmp
+
+*.long
+
+*.print
+
+*.short
+
+*.plot
+
+Pynac/HBL_F2F_field.txt
+
+*.data
+
+Pynac/MBL_F2F_field.txt
+
+Pynac/Spoke_F2F_field.txt

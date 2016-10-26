@@ -59,7 +59,8 @@ class Pynac(object):
             self.dynacProc.stdin.write(ele[0] + '\r\n')
             for datum in ele[1]:
                 self.dynacProc.stdin.write(' '.join([str(i) for i in datum]) + '\r\n')
-        return self.dynacProc.communicate()
+        for line in iter(self.dynacProc.stdout.readline, b''):
+            print(">>> " + line.rstrip())
     
     def getXinds(self, *X):
         """

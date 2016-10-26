@@ -91,3 +91,7 @@ ENV/
 # Vi swap files
 *.swp
 
+
+*.dst
+
+*.in

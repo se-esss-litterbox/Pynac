@@ -83,6 +83,20 @@ class Pynac(object):
     def getNumPlots(self):
         return len(self.getPlotInds()) + 2 * len(self.getXinds('ENVEL'))
     
+    def getQuadInds(self):
+        """
+        Syntactic sugar wrapping the getXinds method.
+        Return all indices for quadrupoles
+        """
+        return self.getXinds('QUADRUPO')
+
+    def getCavMCInds(self):
+        """
+        Syntactic sugar wrapping the getXinds method.
+        Return all indices for CAVMC elements
+        """
+        return self.getXinds('CAVMC')
+    
     def setNewRDBEAMfile(self, filename):
         """
         Change the filename used for the RDBEAM command.

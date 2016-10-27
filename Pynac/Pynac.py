@@ -104,7 +104,16 @@ class Pynac(object):
         Args:
             filename:  The name of the file to use for RDBEAM.
         """
-        self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
+        rdbeam = self.getXinds('RDBEAM')
+        if rdbeam is None:
+            raise KeyError
+        self.lattice[rdbeam[0]][1][0][0] = filename
+
+    def saveBeamDataAt(self, ind, name):
+        wrbeam = 'WRBEAM'
+        data = [[name], [1, 0]]
+
+        self.lattice.insert(ind, [wrbeam,data])
     
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(

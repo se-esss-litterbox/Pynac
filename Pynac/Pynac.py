@@ -36,7 +36,7 @@ class Pynac(object):
         'ZONES': 2,
         'T3D': 0
     }
-    
+
     def __init__(self, dataIn):
         try:
             with open(dataIn, 'r') as file:
@@ -46,7 +46,7 @@ class Pynac(object):
         except TypeError:
             self.lattice = dataIn
             self.name = "Built from another file"
-    
+
     def run(self):
         """
         Perform the Dynac simulation.
@@ -65,28 +65,28 @@ class Pynac(object):
                 self.dynacProc.stdin.write(' '.join([str(i) for i in datum]) + '\r\n')
         for line in iter(self.dynacProc.stdout.readline, b''):
             print(">>> " + line.rstrip())
-    
+
     def getXinds(self, *X):
         """
         Return a list of integers corresponding to lattice entries matching
         certain keywords.
-        
+
         Args:
-            X*: A string containing the name of the Dynac type to be searched 
+            X*: A string containing the name of the Dynac type to be searched
             for or a list of such strings.
         """
         return [i for i,x in enumerate(self.lattice) for y in X if x[0] == y]
-    
+
     def getPlotInds(self):
         """
         Syntactic sugar wrapping the getXinds method.
         Return all indices for Dynac types that result in generation of a plot.
         """
         return self.getXinds('EMITGR','ENVEL','PROFGR')
-    
+
     def getNumPlots(self):
         return len(self.getPlotInds()) + 2 * len(self.getXinds('ENVEL'))
-    
+
     def getQuadInds(self):
         """
         Syntactic sugar wrapping the getXinds method.
@@ -100,7 +100,7 @@ class Pynac(object):
         Return all indices for CAVMC elements
         """
         return self.getXinds('CAVMC')
-    
+
     def setNewRDBEAMfile(self, filename):
         """
         Change the filename used for the RDBEAM command.
@@ -118,31 +118,31 @@ class Pynac(object):
         data = [[name], [1, 0]]
 
         self.lattice.insert(ind, [wrbeam,data])
-    
+
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(
-            ['dynacv6_0','--pipe'], 
-            stdin=stdin, 
+            ['dynacv6_0','--pipe'],
+            stdin=stdin,
             stdout=stdout,
             stderr=subp.PIPE
         )
-    
+
     def _loop(self, item):
         print item
         self.dynacProc.stdin.write(item[0] + '\r\n')
         for data in item[1]:
             self.dynacProc.stdin.write(data)
-    
+
     def _parse(self):
         self.lattice = []
         self.name = self.rawData[0]
-        
+
         ind = 1
         while ind < len(self.rawData):
             if not (self.rawData[ind] == '' or self.rawData[ind][0] == ';'):
                 ind = self._parsedChunk(ind)
             ind += 1
-    
+
     def _parsedChunk(self, currentInd):
         dynacStr = self.rawData[currentInd]
         try:
@@ -169,11 +169,11 @@ class Pynac(object):
                     dat.append([term])
         self.lattice.append([dynacStr, dat])
         return currentInd + numFields
-    
+
     def _getNumFieldsFromiTwiss(self, ind):
         iTwiss = self.rawData[ind+1].split()[1]
         return {'1': 6, '0': 4}[iTwiss]
-    
+
     def _getNumFieldsFromISCSP(self, ind):
         iscsp = self.rawData[ind+1]
         return {
@@ -182,7 +182,6 @@ class Pynac(object):
             '2': 3,
             '3': 3 if self.rawData[ind+3]=='0' else 4
         }[iscsp]
-    
+
     def _mightBeNumber(self, thing):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
-

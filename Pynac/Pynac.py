@@ -37,6 +37,11 @@ class Pynac(object):
         'T3D': 0
     }
 
+    _stateChangers = [
+        'NREF','TOF','NEWF','MMODE','REFCOG',
+        'SCDYNAC','SCPOS','SCDYNEL'
+    ]
+
     def __init__(self, dataIn):
         try:
             with open(dataIn, 'r') as file:
@@ -118,6 +123,11 @@ class Pynac(object):
         data = [[name], [1, 0]]
 
         self.lattice.insert(ind, [wrbeam,data])
+
+    def moveLatticeStartingPoint(self, ind, name):
+        self.saveBeamDataAt(ind, name)
+        self.run()
+
 
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(

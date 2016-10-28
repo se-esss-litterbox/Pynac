@@ -37,11 +37,15 @@ class Pynac(object):
         'T3D': 0
     }
     
-    def __init__(self, filename):
-        self.filename = filename
-        with open(self.filename, 'r') as file:
-            self.rawData = [' '.join(line.split()) for line in file]
-        self._parse()
+    def __init__(self, dataIn):
+        try:
+            with open(dataIn, 'r') as file:
+                self.rawData = [' '.join(line.split()) for line in file]
+            self.filename = dataIn
+            self._parse()
+        except TypeError:
+            self.lattice = dataIn
+            self.name = "Built from another file"
     
     def run(self):
         """

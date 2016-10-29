@@ -127,7 +127,18 @@ class Pynac(object):
     def moveLatticeStartingPoint(self, ind, name):
         self.saveBeamDataAt(ind, name)
         self.run()
+        iniBeamline = Pynac(self.lattice[:ind+1])
 
+    def getCavMClengths(self):
+        cavAndFieldInds = sorted(self.getXinds('FIELD', 'CAVMC'))
+
+    def _getLengthFromField(self, fieldEle):
+        filename = fieldEle[1][0][0]
+        with open(filename) as f:
+            for i,l in enumerate(reversed(f.readlines())):
+                if i==1:
+                    break
+        return float(l.split()[0])
 
     def _startDynacProc(self, stdin, stdout):
         self.dynacProc = subp.Popen(

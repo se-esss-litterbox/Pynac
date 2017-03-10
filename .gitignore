@@ -108,18 +108,34 @@ ENV/
 
 *.plot
 
-Pynac/HBL_F2F_field.txt
+HBL_F2F_field.txt
 
 *.data
 
-Pynac/MBL_F2F_field.txt
+MBL_F2F_field.txt
 
-Pynac/Spoke_F2F_field.txt
+Spoke_F2F_field.txt
 
 *.ipynb
 
-Pynac/ESS_RFQ_out_70mA.dst.allParticles
+ESS_RFQ_out_70mA.dst.allParticles
 
-Pynac/ESS_RFQ_out_70mA.dst.fewParticles
+ESS_RFQ_out_70mA.dst.fewParticles
 
-Pynac/test.html
+test.html
+
+*.plt
+
+*.pro
+
+dynacProc_*
+
+ANA*
+
+*.cnt
+
+*.gnu
+
+dynacv6_0
+
+*.f

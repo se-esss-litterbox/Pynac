@@ -486,3 +486,13 @@ class PhaseSpace:
         reprStr += '\ny: ' + self.yPhaseSpace.__repr__()
         reprStr += '\nz: ' + self.zPhaseSpace.__repr__()
         return reprStr
+
+
+
+def makePhaseSpaceList():
+    with open('dynac.short') as f:
+        dataStr = ''.join(line for line in f.readlines())
+        dataStrArray = dataStr.split('beam (emit card)')[1:]
+        dataStrMatrix = [[j.strip().split() for j in i] for i in[chunk.split('\n')[1:8] for chunk in dataStrArray]]
+
+        return [PhaseSpace(data) for data in dataStrMatrix]

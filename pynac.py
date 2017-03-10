@@ -450,7 +450,6 @@ class PhaseSpace:
         self.xPhaseSpace = self.getPSFromLine(5)
         self.yPhaseSpace = self.getPSFromLine(6)
         self.zPhaseSpace = self.getPSFromLine(4)
-
         self.COG = CentreOfGravity(
             x = Param(val = float(self.dataStrMatrix[1][0]), unit = 'mm'),
             xp = Param(val = float(self.dataStrMatrix[1][1]), unit = 'mrad'),
@@ -459,6 +458,7 @@ class PhaseSpace:
             KE = Param(val = float(self.dataStrMatrix[0][3]), unit = 'MeV'),
             TOF = Param(val = float(self.dataStrMatrix[0][4]), unit = 'deg'),
         )
+        self.particlesLeft = Param(val = float(self.dataStrMatrix[4][5]), unit = 'num')
 
     def getPSFromLine(self, num):
         try:
@@ -481,6 +481,7 @@ class PhaseSpace:
 
     def __repr__(self):
         reprStr = 'COG: ' + self.COG.__repr__()
+        reprStr += '\nparticles left: ' + self.particlesLeft.__repr__()
         reprStr += '\nx: ' + self.xPhaseSpace.__repr__()
         reprStr += '\ny: ' + self.yPhaseSpace.__repr__()
         reprStr += '\nz: ' + self.zPhaseSpace.__repr__()

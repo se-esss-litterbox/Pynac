@@ -3,18 +3,30 @@ from contextlib import contextmanager
 from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
+from concurrent.futures import ProcessPoolExecutor
 import os
 import shutil
 import glob
+from collections import namedtuple
+from elements import Param
 
 startDynacProc = lambda stdin, stdout: subp.Popen(['./dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
 
+def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
+    with ProcessPoolExecutor(max_workers = max_workers) as executor:
+        tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
+    exc = [task.exception() for task in tasks if task.exception()]
+    if exc:
+        return exc
+    else:
+        return "No errors encountered"
+
 def doSingleDynacProcess(num, filelist, pynacFunc):
-    with pynacInSubSirectory(num, filelist):
+    with pynacInSubDirectory(num, filelist):
         pynacFunc()
 
 @contextmanager
-def pynacInSubSirectory(num, filelist):
+def pynacInSubDirectory(num, filelist):
     print('Running %d' % num)
     newDir = 'dynacProc_%04d' % num
     if os.path.isdir(newDir):
@@ -428,3 +440,48 @@ class PynPlt(object):
         grid = gridplot([p0,p1],[p2,p3])
 
         show(grid)
+
+SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
+CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
+
+class PhaseSpace:
+    def __init__(self, dataStrMatrix):
+        self.dataStrMatrix = dataStrMatrix
+        self.xPhaseSpace = self.getPSFromLine(5)
+        self.yPhaseSpace = self.getPSFromLine(6)
+        self.zPhaseSpace = self.getPSFromLine(4)
+
+        self.COG = CentreOfGravity(
+            x = Param(val = float(self.dataStrMatrix[1][0]), unit = 'mm'),
+            xp = Param(val = float(self.dataStrMatrix[1][1]), unit = 'mrad'),
+            y = Param(val = float(self.dataStrMatrix[1][2]), unit = 'mm'),
+            yp = Param(val = float(self.dataStrMatrix[1][3]), unit = 'mrad'),
+            KE = Param(val = float(self.dataStrMatrix[0][3]), unit = 'MeV'),
+            TOF = Param(val = float(self.dataStrMatrix[0][4]), unit = 'deg'),
+        )
+
+    def getPSFromLine(self, num):
+        try:
+            test = float(self.dataStrMatrix[num][6])
+            return SingleDimPS(
+                pos = Param(val = float(self.dataStrMatrix[num][0]), unit = 'mm'),
+                mom = Param(val = float(self.dataStrMatrix[num][1]), unit = 'mrad'),
+                R12 = Param(val = float(self.dataStrMatrix[num][2]), unit = '?'),
+                normEmit = Param(val = float(self.dataStrMatrix[num][3]), unit = 'mm.mrad'),
+                nonNormEmit = Param(val = float(self.dataStrMatrix[num][6]), unit = 'mm.mrad'),
+            )
+        except:
+            return SingleDimPS(
+                pos = Param(val = float(self.dataStrMatrix[num][0]), unit = 'deg'),
+                mom = Param(val = float(self.dataStrMatrix[num][1]), unit = 'keV'),
+                R12 = Param(val = float(self.dataStrMatrix[num][2]), unit = '?'),
+                normEmit = Param(val = float(self.dataStrMatrix[num][3]), unit = 'keV.ns'),
+                nonNormEmit = Param(val = None, unit = None),
+            )
+
+    def __repr__(self):
+        reprStr = 'COG: ' + self.COG.__repr__()
+        reprStr += '\nx: ' + self.xPhaseSpace.__repr__()
+        reprStr += '\ny: ' + self.yPhaseSpace.__repr__()
+        reprStr += '\nz: ' + self.zPhaseSpace.__repr__()
+        return reprStr

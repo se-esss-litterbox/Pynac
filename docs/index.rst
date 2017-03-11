@@ -20,9 +20,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   license
    PynacPynPlt
    ErrorStudiesInParallel
+   license
 
 Indices and tables
 ------------------

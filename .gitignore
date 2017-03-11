@@ -92,6 +92,7 @@ ENV/
 *.swp
 
 # Dynac stuff
+Pynac/*
 *.dst
 *.in
 *.out

@@ -85,6 +85,9 @@ class Pynac(object):
         self._parse()
 
     def run(self):
+        '''
+        Run the simulation in the current directory.
+        '''
         self._startDynacProc(stdin=subp.PIPE, stdout=subp.PIPE)
         str2write = self.name + '\r\n'
         self.dynacProc.stdin.write(str2write.encode()) # The name field
@@ -105,15 +108,32 @@ class Pynac(object):
             raise RuntimeError("Errors occured during execution of Dynac")
 
     def getXinds(self, *X):
+        '''
+        Return the indices into the lattice list attribute of elements whose Dynac
+        type matches the input string.  Multiple input strings can be given, either
+        as a comma-separated list or as a genuine Python list.
+        '''
         return [i for i,x in enumerate(self.lattice) for y in X if x[0] == y]
 
     def getPlotInds(self):
+        '''
+        Return the indices into the lattice list attribute of elements that result
+        in Dynac plot output.
+        '''
         return self.getXinds('EMITGR','ENVEL','PROFGR')
 
     def getNumPlots(self):
+        '''
+        Return the number of Dynac plots that will be output when Dynac is run.
+        '''
         return len(self.getPlotInds()) + 2 * len(self.getXinds('ENVEL'))
 
     def setNewRDBEAMfile(self, filename):
+        '''
+        Change the current 'RDBEAM' command to point at another Dynac input file.
+        This will raise an IndexError if the lattice doesn't contain an RDBEAM
+        command.
+        '''
         self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
 
     def _startDynacProc(self, stdin, stdout):

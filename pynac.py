@@ -514,11 +514,19 @@ CentreOfGravity.KE.__doc__ = 'Kinetic energy parameter'
 CentreOfGravity.TOF.__doc__ = 'Time-of-flight parameter'
 
 class PhaseSpace:
+    '''
+    A representation of the phase space of the simulated bunch read from the
+    `dynac.short` file.  Each of the phase space parameters is represented as a
+    `elements.Parameter` namedtuple.
+
+    This class is intended to be used in interactive explorations of the data
+    produced during Pynac simulations.
+    '''
     def __init__(self, dataStrMatrix):
         self.dataStrMatrix = dataStrMatrix
-        self.xPhaseSpace = self.getPSFromLine(5)
-        self.yPhaseSpace = self.getPSFromLine(6)
-        self.zPhaseSpace = self.getPSFromLine(4)
+        self.xPhaseSpace = self._getPSFromLine(5)
+        self.yPhaseSpace = self._getPSFromLine(6)
+        self.zPhaseSpace = self._getPSFromLine(4)
         self.COG = CentreOfGravity(
             x = Param(val = float(self.dataStrMatrix[1][0]), unit = 'mm'),
             xp = Param(val = float(self.dataStrMatrix[1][1]), unit = 'mrad'),
@@ -529,7 +537,7 @@ class PhaseSpace:
         )
         self.particlesLeft = Param(val = float(self.dataStrMatrix[4][5]), unit = 'num')
 
-    def getPSFromLine(self, num):
+    def _getPSFromLine(self, num):
         try:
             test = float(self.dataStrMatrix[num][6])
             return SingleDimPS(

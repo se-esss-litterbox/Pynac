@@ -1,4 +1,4 @@
-Demos on Jupyter
+Usage examples
 ================
 
 .. toctree::

@@ -91,57 +91,29 @@ ENV/
 # Vi swap files
 *.swp
 
-
+# Dynac stuff
 *.dst
-
 *.in
-
 *.out
-
 *.dmp
-
 *.long
-
 *.print
-
 *.short
-
 *.plot
-
 HBL_F2F_field.txt
-
 *.data
-
 MBL_F2F_field.txt
-
 Spoke_F2F_field.txt
-
-*.ipynb
-
 ESS_RFQ_out_70mA.dst.allParticles
-
 ESS_RFQ_out_70mA.dst.fewParticles
-
 test.html
-
 *.plt
-
 *.pro
-
-dynacProc_*
-
-ANA*
-
 *.cnt
-
 *.gnu
-
 dynacv6_0
 
-*.f
+# Jupyter stuff
+dynacProc_*
+*.ipynb
 
-HEBTstudies*
-
-textPexpect.py
-
-steve

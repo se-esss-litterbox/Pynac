@@ -9,6 +9,8 @@ Pynac
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   
+   license
 
 Pynac is a Python wrapper around Dynac, which is an executable used for simulating
 the motion of charged particles through accelerator beamlines.  More details can

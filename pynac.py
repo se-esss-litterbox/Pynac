@@ -565,6 +565,11 @@ class PhaseSpace:
         return reprStr
 
 def makePhaseSpaceList():
+    '''
+    Extract all the phase space information (due to `EMIT` commands in the input
+    file), and create a list of PhaseSpace objects.  The primary purpose of this
+    is for interactive explorations of the data produced during Pynac simulations.
+    '''
     with open('dynac.short') as f:
         dataStr = ''.join(line for line in f.readlines())
         dataStrArray = dataStr.split('beam (emit card)')[1:]
@@ -573,6 +578,10 @@ def makePhaseSpaceList():
         return [PhaseSpace(data) for data in dataStrMatrix]
 
 def getNumberOfParticles():
+    '''
+    Queries the `dynac.short` file for the number of particles used in the
+    simulation.
+    '''
     with open('dynac.short') as f:
         dataStr = ''.join(line for line in f.readlines())
         numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])

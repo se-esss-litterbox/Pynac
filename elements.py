@@ -1,6 +1,10 @@
 from collections import namedtuple
 
 Param = namedtuple('Param', ['val', 'unit'])
+Param.__doc__ = '''A parameter
+
+val - The parameter's value
+unit - The unit the value is given in'''
 
 class Quad:
     def __init__(self, pynacRepr):

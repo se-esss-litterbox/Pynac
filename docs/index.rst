@@ -15,14 +15,16 @@ simulations to be performed on multi-core, multi-CPU, machines without supervisi
 We believe this flexibility is of huge benefit to those designing and modelling
 charged-particle beamlines.
 
+Contents
+--------
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-   
+
    license
+   PynacPynPlt
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

@@ -4,6 +4,7 @@ Param = namedtuple('Param', ['val', 'unit'])
 Param.__doc__ = '''A parameter
 
 val - The parameter's value
+
 unit - The unit the value is given in'''
 
 class Quad:

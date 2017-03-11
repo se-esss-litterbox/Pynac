@@ -466,7 +466,9 @@ class PynPlt(object):
 
 SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
 CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
-CentreOfGravity.__doc__ = '6D centre of gravity of the simulated bunch'
+CentreOfGravity.__doc__ = '''
+6D centre of gravity of the simulated bunch.  Each of the following is of type
+elements.Parameter.'''
 CentreOfGravity.x.__doc__ = 'Horizontal location parameter'
 CentreOfGravity.xp.__doc__ = 'Horizontal momentum parameter'
 CentreOfGravity.y.__doc__ = 'Vertical location parameter'

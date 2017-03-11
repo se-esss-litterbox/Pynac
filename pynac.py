@@ -221,6 +221,14 @@ class Pynac(object):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
 
 class PynPlt(object):
+    '''
+    The main entry point for production of Dynac-style plots.
+
+    When instantiated, this will parse the `emit.plot` file in the current
+    directory in preparation for producing the Dynac-style plots.
+
+    Note that this module relies on bokeh functionality.
+    '''
     def __init__(self):
         with open('emit.plot', 'r') as file:
             self.rawData = [' '.join(line.split()) for line in file]
@@ -304,7 +312,7 @@ class PynPlt(object):
             else:
                 raise ValueError("Unknown plotType")
 
-    def plot(self, ind):
+    def _plot(self, ind):
         plotType = self.plots[ind]['type']
         if plotType == 'EMITGR':
             self._plotEMITGR(ind)
@@ -314,7 +322,11 @@ class PynPlt(object):
             self._plotPROFGR(ind)
 
     def plotit(self):
-        [self.plot(i) for i in range(len(self.plots))]
+        '''
+        Produce the plots requested in the Dynac input file.  This makes the same
+        plots as produced by the Dynac `plotit` command.
+        '''
+        [self._plot(i) for i in range(len(self.plots))]
 
     def _getScaleNAndData(self, i, scaleStr, datStrs):
         i += 1

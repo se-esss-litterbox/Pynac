@@ -466,6 +466,13 @@ class PynPlt(object):
 
 SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
 CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
+CentreOfGravity.__doc__ = '6D centre of gravity of the simulated bunch'
+CentreOfGravity.x.__doc__ = 'Horizontal location parameter'
+CentreOfGravity.xp.__doc__ = 'Horizontal momentum parameter'
+CentreOfGravity.y.__doc__ = 'Vertical location parameter'
+CentreOfGravity.yp.__doc__ = 'Vertical momentum parameter'
+CentreOfGravity.KE.__doc__ = 'Kinetic energy parameter'
+CentreOfGravity.TOF.__doc__ = 'Time-of-flight parameter'
 
 class PhaseSpace:
     def __init__(self, dataStrMatrix):

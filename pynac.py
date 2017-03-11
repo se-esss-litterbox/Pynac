@@ -16,6 +16,11 @@ from elements import Param
 startDynacProc = lambda stdin, stdout: subp.Popen(['./dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
 
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
+    '''
+    Use a ProcessPool from the `concurrent.futures` module to execute `numIters`
+    number of instances of `pynacFunc`.  This function takes advantage of `doSingleDynacProcess`
+    and `pynacInSubDirectory`.
+    '''
     with ProcessPoolExecutor(max_workers = max_workers) as executor:
         tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
     exc = [task.exception() for task in tasks if task.exception()]
@@ -25,11 +30,30 @@ def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
         return "No errors encountered"
 
 def doSingleDynacProcess(num, filelist, pynacFunc):
+    '''
+    Execute `pynacFunc` in the `pynacInSubDirectory` context manager.  See the
+    docstring for that context manager to understand the meaning of the `num` and
+    `filelist` inputs.
+
+    The primary purpose of this function is to enable multiprocess use of Pynac via
+    the `multiProcessPynac` function.
+    '''
     with pynacInSubDirectory(num, filelist):
         pynacFunc()
 
 @contextmanager
 def pynacInSubDirectory(num, filelist):
+    '''
+    A context manager to create a new directory, move the files listed in `filelist`
+    to that directory, and change to that directory before handing control back to
+    context.  The closing action is to change back to the original directory.
+
+    The directory name is based on the `num` input, and if it already exists, it
+    will be deleted upon entering the context.
+
+    The primary purpose of this function is to enable multiprocess use of Pynac via
+    the `multiProcessPynac` function.
+    '''
     print('Running %d' % num)
     newDir = 'dynacProc_%04d' % num
     if os.path.isdir(newDir):
@@ -465,10 +489,13 @@ class PynPlt(object):
         show(grid)
 
 SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
+
+
 CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
 CentreOfGravity.__doc__ = '''
 6D centre of gravity of the simulated bunch.  Each of the following is of type
-elements.Parameter.'''
+elements.Parameter.
+'''
 CentreOfGravity.x.__doc__ = 'Horizontal location parameter'
 CentreOfGravity.xp.__doc__ = 'Horizontal momentum parameter'
 CentreOfGravity.y.__doc__ = 'Vertical location parameter'

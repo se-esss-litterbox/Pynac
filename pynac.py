@@ -387,7 +387,7 @@ class PynPlt(object):
         data = self.plots[ind]
         p0 = figure(title=data['name'],
             plot_height=400,
-            plot_width=900,
+            plot_width=700,
             x_range=data['xscale'][:2],
             y_range=data['xscale'][2:]
            )
@@ -396,7 +396,7 @@ class PynPlt(object):
 
         p1 = figure(title=data['name2'],
             plot_height=400,
-            plot_width=900,
+            plot_width=700,
             x_range=data['Wscale'][:2],
             y_range=data['Wscale'][2:]
            )
@@ -404,7 +404,7 @@ class PynPlt(object):
 
         p2 = figure(title=data['name3'],
             plot_height=400,
-            plot_width=900,
+            plot_width=700,
             x_range=data['Phiscale'][:2],
             y_range=data['Phiscale'][2:]
            )
@@ -417,7 +417,7 @@ class PynPlt(object):
         x, y = data['z'], data['x']
         p0 = figure(title=data['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['xscale'][:2],
             y_range=data['xscale'][2:]
            )
@@ -426,7 +426,7 @@ class PynPlt(object):
         x, y = data['z'], data['y']
         p1 = figure(title=data['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['xscale'][:2],
             y_range=data['xscale'][2:]
            )
@@ -442,7 +442,7 @@ class PynPlt(object):
 
         p3 = figure(title=data['name'],
                     plot_height=400,
-                    plot_width=400
+                    plot_width=350
                    )
         p3.line(data['xpVal'],data['xpN'], color='red')
         p3.line(data['ypVal'],data['ypN'], color='green')
@@ -458,7 +458,7 @@ class PynPlt(object):
         x, y = data['x'], data['xp']
         p0 = figure(title=data['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['xscale'][:2],
             y_range=data['xscale'][2:]
            )
@@ -468,7 +468,7 @@ class PynPlt(object):
         x, y = data['y'], data['yp']
         p1 = figure(title=data['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['yscale'][:2],
             y_range=data['yscale'][2:]
            )
@@ -478,7 +478,7 @@ class PynPlt(object):
         x, y = data['x'], data['y']
         p2 = figure(title=self.plots[ind]['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['xscale'][:2],
             y_range=data['yscale'][:2]
            )
@@ -487,7 +487,7 @@ class PynPlt(object):
         x, y = data['z'], data['zp']
         p3 = figure(title=self.plots[ind]['name'],
             plot_height=400,
-            plot_width=400,
+            plot_width=350,
             x_range=data['zscale'][:2],
             y_range=data['zscale'][2:]
            )

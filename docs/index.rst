@@ -8,7 +8,7 @@ Pynac
 
 Pynac is a Python wrapper around Dynac, which is an executable used for simulating
 the motion of charged particles through accelerator beamlines.  More details can
-be found on the Dynac homepage.
+be found on `the Dynac homepage <https://dynac.web.cern.ch/dynac/dynac.html>`_.
 
 Pynac allows for a very interactive style of use, while also allowing large-scale
 simulations to be performed on multi-core, multi-CPU, machines without supervision.
@@ -20,8 +20,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   PynacPynPlt
-   ErrorStudiesInParallel
+   demos
    license
 
 Indices and tables

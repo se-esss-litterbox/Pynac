@@ -1,3 +1,6 @@
+'''
+The main module for Pynac.
+'''
 import subprocess as subp
 from contextlib import contextmanager
 from bokeh.io import push_notebook, show, output_notebook

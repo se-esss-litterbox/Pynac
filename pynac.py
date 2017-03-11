@@ -13,8 +13,6 @@ import glob
 from collections import namedtuple
 from elements import Param
 
-startDynacProc = lambda stdin, stdout: subp.Popen(['./dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
-
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
     '''
     Use a ProcessPool from the `concurrent.futures` module to execute `numIters`

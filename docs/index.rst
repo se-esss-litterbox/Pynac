@@ -22,6 +22,7 @@ Contents
 
    license
    PynacPynPlt
+   ErrorStudiesInParallel
 
 Indices and tables
 ------------------

@@ -44,6 +44,12 @@ def pynacInSubDirectory(num, filelist):
     os.chdir('..')
 
 class Pynac(object):
+    '''
+    The primary entry point for performing simulations.  Objects of this class
+    contain all the necessary information to perform a Dynac simulation, as well
+    as methods to manipulate the lattice, and to make the call to Dynac.
+
+    '''
     _fieldData = {
         'INPUT': 2,
         'RDBEAM': 5,
@@ -111,12 +117,6 @@ class Pynac(object):
         self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
 
     def _startDynacProc(self, stdin, stdout):
-#         self.dynacProc = subp.Popen(
-#             ['/usr/local/opt/coreutils/libexec/gnubin/stdbuf','-oL','dynacv6_0','--pipe'],
-#             stdin=stdin,
-#             stdout=stdout,
-#             stderr=subp.STDOUT
-#         )
         self.dynacProc = subp.Popen(['dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
 
     def _loop(self, item):

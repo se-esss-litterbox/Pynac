@@ -499,7 +499,14 @@ class PynPlt(object):
         show(grid)
 
 SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
-
+SingleDimPS.__doc__ = '''
+Phase space parameters of the simulated bunch in a single dimension.
+'''
+SingleDimPS.pos.__doc__ = 'Position spread of the bunch'
+SingleDimPS.mom.__doc__ = 'Momentum spread of the bunch'
+SingleDimPS.R12.__doc__ = 'R(1,2) of the bunch'
+SingleDimPS.normEmit.__doc__ = 'Normalised emittance of the bunch'
+SingleDimPS.nonNormEmit.__doc__ = 'Non-normalised emittance of the bunch'
 
 CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
 CentreOfGravity.__doc__ = '''

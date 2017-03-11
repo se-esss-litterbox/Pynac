@@ -487,8 +487,6 @@ class PhaseSpace:
         reprStr += '\nz: ' + self.zPhaseSpace.__repr__()
         return reprStr
 
-
-
 def makePhaseSpaceList():
     with open('dynac.short') as f:
         dataStr = ''.join(line for line in f.readlines())
@@ -496,3 +494,9 @@ def makePhaseSpaceList():
         dataStrMatrix = [[j.strip().split() for j in i] for i in[chunk.split('\n')[1:8] for chunk in dataStrArray]]
 
         return [PhaseSpace(data) for data in dataStrMatrix]
+
+def getNumberOfParticles():
+    with open('dynac.short') as f:
+        dataStr = ''.join(line for line in f.readlines())
+        numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])
+    return numOfParts

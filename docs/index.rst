@@ -24,6 +24,7 @@ Contents
    modules
    demos
    license
+   contact
 
 Indices and tables
 ------------------

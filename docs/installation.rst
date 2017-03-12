@@ -37,6 +37,5 @@ Not in a virtualenv
 +++++++++++++++++++
 
 #. Make a directory to work in, and move into it -- ``mkdir workingDir && cd workingDir``
-#. Start the virtual environment -- ``source venv/bin/activate``
 #. Install the bokeh plotting library -- ``sudo pip install bokeh``
 #. Install Pynac -- ``sudo pip install Pynac``

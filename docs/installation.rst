@@ -27,15 +27,16 @@ In a virtualenv
 
 To do this you'll need ``virtualenv`` on your system.  ``sudo pip install virtualenv``
 
-#. Grab the code from Github -- ``git clone https://github.com/se-esss-litterbox/Pynac.git``
-#. Move into the newly downloaded directory -- ``cd Pynac``
+#. Make a directory to work in, and move into it -- ``mkdir workingDir && cd workingDir``
 #. Create a Python3 virtual environment -- ``virtualenv --no-site-packages --python=python3 venv``
 #. Start the virtual environment -- ``source venv/bin/activate``
-#. Install the required packages -- ``pip install -r requirements.txt``
+#. Install the bokeh plotting library -- ``pip install bokeh``
+#. Install Pynac -- ``pip install Pynac``
 
 Not in a virtualenv
 +++++++++++++++++++
 
-#. Grab the code from Github -- ``git clone https://github.com/se-esss-litterbox/Pynac.git``
-#. Move into the newly downloaded directory -- ``cd Pynac``
-#. Install the required packages -- ``sudo pip install -r requirements.txt``
+#. Make a directory to work in, and move into it -- ``mkdir workingDir && cd workingDir``
+#. Start the virtual environment -- ``source venv/bin/activate``
+#. Install the bokeh plotting library -- ``sudo pip install bokeh``
+#. Install Pynac -- ``sudo pip install Pynac``

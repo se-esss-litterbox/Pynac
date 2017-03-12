@@ -19,8 +19,8 @@ to compile this, so start by downloading the appropriate binary from from
 Pynac Installation
 ------------------
 
-As is usual with Python code, I recommend installing this in a virtual environment,
-however you may not want to do that.  I've listed the steps for both cases here.
+I recommend working in a virtual environment, but since some people don't like to
+do that, I've listed the steps for either case here.
 
 In a virtualenv
 +++++++++++++++

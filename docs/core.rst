@@ -1,7 +1,7 @@
 Core
 ============
 
-.. automodule:: Pynac.core
+.. automodule:: Pynac.Core
     :members:
     :undoc-members:
     :show-inheritance:

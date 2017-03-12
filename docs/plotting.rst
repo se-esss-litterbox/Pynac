@@ -1,7 +1,7 @@
 Plotting
 ===============
 
-.. automodule:: Pynac.plotting
+.. automodule:: Pynac.Plotting
     :members:
     :undoc-members:
     :show-inheritance:

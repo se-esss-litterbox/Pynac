@@ -8,13 +8,13 @@ import os
 import shutil
 import glob
 from collections import namedtuple
-from Pynac.elements import Param
+from Pynac.Elements import Param
 
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
     '''
-    Use a ProcessPool from the `concurrent.futures` module to execute `numIters`
-    number of instances of `pynacFunc`.  This function takes advantage of `doSingleDynacProcess`
-    and `pynacInSubDirectory`.
+    Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
+    number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
+    and ``pynacInSubDirectory``.
     '''
     with ProcessPoolExecutor(max_workers = max_workers) as executor:
         tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
@@ -26,12 +26,12 @@ def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
 
 def doSingleDynacProcess(num, filelist, pynacFunc):
     '''
-    Execute `pynacFunc` in the `pynacInSubDirectory` context manager.  See the
-    docstring for that context manager to understand the meaning of the `num` and
-    `filelist` inputs.
+    Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
+    docstring for that context manager to understand the meaning of the ``num`` and
+    ``filelist`` inputs.
 
     The primary purpose of this function is to enable multiprocess use of Pynac via
-    the `multiProcessPynac` function.
+    the ``multiProcessPynac`` function.
     '''
     with pynacInSubDirectory(num, filelist):
         pynacFunc()
@@ -39,15 +39,15 @@ def doSingleDynacProcess(num, filelist, pynacFunc):
 @contextmanager
 def pynacInSubDirectory(num, filelist):
     '''
-    A context manager to create a new directory, move the files listed in `filelist`
+    A context manager to create a new directory, move the files listed in ``filelist``
     to that directory, and change to that directory before handing control back to
     context.  The closing action is to change back to the original directory.
 
-    The directory name is based on the `num` input, and if it already exists, it
+    The directory name is based on the ``num`` input, and if it already exists, it
     will be deleted upon entering the context.
 
     The primary purpose of this function is to enable multiprocess use of Pynac via
-    the `multiProcessPynac` function.
+    the ``multiProcessPynac`` function.
     '''
     print('Running %d' % num)
     newDir = 'dynacProc_%04d' % num
@@ -149,7 +149,7 @@ class Pynac(object):
 
     def setNewRDBEAMfile(self, filename):
         '''
-        Change the current 'RDBEAM' command to point at another Dynac input file.
+        Change the current ``RDBEAM`` command to point at another Dynac input file.
         This will raise an IndexError if the lattice doesn't contain an RDBEAM
         command.
         '''
@@ -242,8 +242,8 @@ CentreOfGravity.TOF.__doc__ = 'Time-of-flight parameter'
 class PhaseSpace:
     '''
     A representation of the phase space of the simulated bunch read from the
-    `dynac.short` file.  Each of the phase space parameters is represented as a
-    `elements.Parameter` namedtuple.
+    ``dynac.short`` file.  Each of the phase space parameters is represented as a
+    ``elements.Parameter`` namedtuple.
 
     This class is intended to be used in interactive explorations of the data
     produced during Pynac simulations.
@@ -292,7 +292,7 @@ class PhaseSpace:
 
 def makePhaseSpaceList():
     '''
-    Extract all the phase space information (due to `EMIT` commands in the input
+    Extract all the phase space information (due to ``EMIT`` commands in the input
     file), and create a list of PhaseSpace objects.  The primary purpose of this
     is for interactive explorations of the data produced during Pynac simulations.
     '''
@@ -305,7 +305,7 @@ def makePhaseSpaceList():
 
 def getNumberOfParticles():
     '''
-    Queries the `dynac.short` file for the number of particles used in the
+    Queries the ``dynac.short`` file for the number of particles used in the
     simulation.
     '''
     with open('dynac.short') as f:

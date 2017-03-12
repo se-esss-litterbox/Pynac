@@ -2,7 +2,7 @@ class PynPlt(object):
     '''
     The main entry point for production of Dynac-style plots.
 
-    When instantiated, this will parse the `emit.plot` file in the current
+    When instantiated, this will parse the ``emit.plot`` file in the current
     directory in preparation for producing the Dynac-style plots.
 
     Note that this module relies on bokeh functionality.
@@ -102,7 +102,7 @@ class PynPlt(object):
     def plotit(self):
         '''
         Produce the plots requested in the Dynac input file.  This makes the same
-        plots as produced by the Dynac `plotit` command.
+        plots as produced by the Dynac ``plotit`` command.
         '''
         [self._plot(i) for i in range(len(self.plots))]
 

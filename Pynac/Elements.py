@@ -12,7 +12,7 @@ class Quad:
     A Pynac representation of a quadrupole magnet.
 
     Before the simulation is run, any changes made to elements using this class have to
-    be put back into the `lattice` attribute of `Pynac` using the `dynacRepresentation`
+    be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
     method.
     '''
     def __init__(self, pynacRepr):
@@ -25,8 +25,8 @@ class Quad:
 
     def scaleField(self, scalingFactor):
         '''
-        Adjust the field of the magnet by the value of `scalingFactor`.  The adjustment
-        is multiplicative, so a value of `scalingFactor = 1.0` will result in no change
+        Adjust the field of the magnet by the value of ``scalingFactor``.  The adjustment
+        is multiplicative, so a value of ``scalingFactor = 1.0`` will result in no change
         of the field.
         '''
         self.B = self.B._replace(val=self.B.val * scalingFactor)
@@ -46,11 +46,11 @@ class Quad:
 
 class CavityAnalytic:
     '''
-    A Pynac representation of a resonant EM cavity (i.e., the `CAVMC` model used by Dynac
+    A Pynac representation of a resonant EM cavity (i.e., the ``CAVMC`` model used by Dynac
     to do analytic calculations).
 
     Before the simulation is run, any changes made to elements using this class have to
-    be put back into the `lattice` attribute of `Pynac` using the `dynacRepresentation`
+    be put back into the ``lattice`` attribute of ``Pynac`` using the ``dynacRepresentation``
     method.
     '''
     def __init__(self, pynacRepr):
@@ -67,16 +67,16 @@ class CavityAnalytic:
 
     def adjustPhase(self, adjustment):
         '''
-        Adjust the accelerating phase of the cavity by the value of `adjustment`.
-        The adjustment is additive, so a value of `scalingFactor = 0.0` will result
+        Adjust the accelerating phase of the cavity by the value of ``adjustment``.
+        The adjustment is additive, so a value of ``scalingFactor = 0.0`` will result
         in no change of the phase.
         '''
         self.phase = self.phase._replace(val = self.phase.val + adjustment)
 
     def scaleField(self, scalingFactor):
         '''
-        Adjust the accelerating field of the cavity by the value of `scalingFactor`.
-        The adjustment is multiplicative, so a value of `scalingFactor = 1.0` will result
+        Adjust the accelerating field of the cavity by the value of ``scalingFactor``.
+        The adjustment is multiplicative, so a value of ``scalingFactor = 1.0`` will result
         in no change of the field.
         '''
         oldField = self.fieldReduction.val

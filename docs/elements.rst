@@ -1,7 +1,7 @@
 Elements
 ===============
 
-.. automodule:: Pynac.elements
+.. automodule:: Pynac.Elements
     :members:
     :undoc-members:
     :show-inheritance:

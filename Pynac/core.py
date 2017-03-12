@@ -8,7 +8,7 @@ import os
 import shutil
 import glob
 from collections import namedtuple
-from elements import Param
+from Pynac.elements import Param
 
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
     '''

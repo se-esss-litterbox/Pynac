@@ -4,16 +4,16 @@ Installation
 .. _Dynac download page: http://dynac.web.cern.ch/dynac/beta/dynacb.html
 .. _the GFortranBinaries page: https://gcc.gnu.org/wiki/GFortranBinaries
 
-Installation involves two pretty simple steps.  First install Dynac, then Pynac.
+Installation involves two pretty simple steps.  Install Dynac, then install Pynac.
 
 Dynac Installation
 ------------------
-Dynac is an executable that is distributed as Fortran source.  You'll need Gfortran
+Dynac is distributed as Fortran source.  You'll need Gfortran
 to compile it, so start by downloading the appropriate binary from from
-`the GFortranBinaries page`_.  Once you have ``gfortran`` installed, follow these
+`the GFortranBinaries page`_.  Once Gfortran is installed, follow these
 steps to get Dynac running.
 
-#. Download the Dynac source file (Fortran) from the `Dynac download page`_.
+#. Download the Dynac source from the `Dynac download page`_.
 #. Compile with ``gfortran``.  Pynac currently assumes that the executable is called ``dynacv6_0``, but this will be configurable in future releases.
 #. Put the executable into the system path
 

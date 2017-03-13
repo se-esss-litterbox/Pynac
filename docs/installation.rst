@@ -28,12 +28,14 @@ In a virtualenv
 
 To do this you'll need ``virtualenv`` on your system.  ``sudo pip install virtualenv``
 
-#. Make a directory to work in, and move into it -- ``mkdir workingDir && cd workingDir``
-#. Create and start a Python3 virtual environment using whatever technique you normally use.  Perhaps as following:
-#. (``virtualenv --no-site-packages --python=python3 venv``)
-#. (``source venv/bin/activate``)
-#. Install the bokeh plotting library -- ``pip install bokeh``
-#. Install Pynac -- ``pip install Pynac``
+1. Make a directory to work in, and move into it -- ``mkdir workingDir && cd workingDir``
+2. Create and start a Python3 virtual environment using whatever technique you normally use.  Perhaps as following:
+
+  * ``virtualenv --no-site-packages --python=python3 venv``
+  * ``source venv/bin/activate``
+
+3. Install the bokeh plotting library -- ``pip install bokeh``
+4. Install Pynac -- ``pip install Pynac``
 
 Not in a virtualenv
 +++++++++++++++++++

@@ -1,4 +1,5 @@
 import unittest
+import os
 from Pynac.Core import Pynac
 from Pynac import Elements as ele
 

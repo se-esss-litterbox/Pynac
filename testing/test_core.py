@@ -1,4 +1,5 @@
 import unittest
+import os
 from Pynac.Core import Pynac
 
 class PynacTest(unittest.TestCase):

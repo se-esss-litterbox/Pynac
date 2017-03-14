@@ -17,3 +17,4 @@ before_install:
   - cd source
   - gfortran dynacv6_0.f -o ../bin/dynacv6_0
   - export PATH=`pwd`/../bin:$PATH
+  - cd ..

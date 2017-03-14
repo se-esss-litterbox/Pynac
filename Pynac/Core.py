@@ -113,7 +113,7 @@ class Pynac(object):
         self.dynacProc.stdin.write(str2write.encode()) # The name field
         for ele in self.lattice:
             str2write = ele[0]
-            print str2write
+            print(str2write)
             try:
                 self.dynacProc.stdin.write((ele[0] + '\r\n').encode())
             except IOError:

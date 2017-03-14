@@ -123,7 +123,10 @@ class Pynac(object):
                     self.dynacProc.stdin.write((str2write+'\r\n').encode())
                 except IOError:
                     break
-        self.dynacProc.stdin.close()
+        try:
+            self.dynacProc.stdin.close()
+        except BrokenPipeError:
+            pass
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
 

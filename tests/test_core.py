@@ -1,6 +1,6 @@
 import unittest
 import os
-from Pynac.Core import Pynac
+from Pynac.Core import Pynac, getNumberOfParticles
 
 class PynacTest(unittest.TestCase):
     def setUp(self):
@@ -25,6 +25,30 @@ class PynacTest(unittest.TestCase):
     def test_getXinds_nonsense(self):
         nonsenseinds = self.pynacInstance.getXinds('BLAHBLAHBLAH')
         self.assertEqual(len(nonsenseinds), 0)
+
+    def test_getNumberOfParticles(self):
+        self.pynacInstance.run()
+        p = getNumberOfParticles()
+        self.assertEqual(p, 1000)
+
+    def tearDown(self):
+        filelist = [
+            'beam_core.dst',
+            'beam_remove.dst',
+            'cavdat.out',
+            'dynac_in_pr.dst',
+            'dynac.dmp',
+            'dynac.long',
+            'dynac.print',
+            'dynac.short',
+            'emit.plot',
+            'lost_particles.data',
+        ]
+        for f in filelist:
+            try:
+                os.remove(f)
+            except FileNotFoundError:
+                pass
 
 if __name__ == '__main__':
     unittest.main()

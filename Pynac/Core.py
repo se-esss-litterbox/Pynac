@@ -120,9 +120,11 @@ class Pynac(object):
                 break
             for datum in ele[1]:
                 str2write = ' '.join([str(i) for i in datum])
+                print(str2write)
                 try:
                     self.dynacProc.stdin.write((str2write+'\r\n').encode())
                 except IOError:
+                    print("Breaking on IOError")
                     break
         self.dynacProc.stdin.close()
         if self.dynacProc.wait() != 0:

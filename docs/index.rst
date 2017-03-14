@@ -25,5 +25,5 @@ Contents
    demos
    license
    contact
-   
+
 * :ref:`genindex`

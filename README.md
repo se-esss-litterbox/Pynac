@@ -1,4 +1,7 @@
 # Pynac
+
+[![Build Status](https://travis-ci.org/se-esss-litterbox/Pynac.svg?branch=master)](https://travis-ci.org/se-esss-litterbox/Pynac)
+
 This is a Python wrapper around the Dynac particle tracking code that allows it to be used from a Jupyter notebook environment.
 
 Dynac is freeware software for simulating the behaviour of charged particle beams in particle accelerators.  Further information may be found here ---> https://dynac.web.cern.ch/dynac/dynac.html

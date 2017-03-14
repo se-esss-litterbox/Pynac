@@ -1,11 +1,14 @@
 from collections import namedtuple
 
 Param = namedtuple('Param', ['val', 'unit'])
-Param.__doc__ = '''
-A representation of a parameter as a value associated with a unit.
-'''
-Param.val.__doc__ = 'The numerical value of the parameter'
-Param.unit.__doc__ = 'The unit used for this parameter'
+try:
+    Param.__doc__ = '''
+    A representation of a parameter as a value associated with a unit.
+    '''
+    Param.val.__doc__ = 'The numerical value of the parameter'
+    Param.unit.__doc__ = 'The unit used for this parameter'
+except AttributeError:
+    warnings.warn('Namedtuples cannot have docstrings in this version of Python')
 
 class Quad:
     '''

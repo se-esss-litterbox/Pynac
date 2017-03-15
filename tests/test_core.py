@@ -4,7 +4,7 @@ from Pynac.Core import Pynac, getNumberOfParticles
 
 class PynacTest(unittest.TestCase):
     def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'sns_mebt_dtl1.in'))
+        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'datafiles/sns_mebt_dtl1.in'))
 
     def test_getPlotInds(self):
         self.assertEqual(self.pynacInstance.getNumPlots(), 7)
@@ -26,10 +26,10 @@ class PynacTest(unittest.TestCase):
         nonsenseinds = self.pynacInstance.getXinds('BLAHBLAHBLAH')
         self.assertEqual(len(nonsenseinds), 0)
 
-    # def test_getNumberOfParticles(self):
-    #     self.pynacInstance.run()
-    #     p = getNumberOfParticles()
-    #     self.assertEqual(p, 1000)
+    def test_getNumberOfParticles(self):
+        self.pynacInstance.run()
+        p = getNumberOfParticles()
+        self.assertEqual(p, 1000)
 
 if __name__ == '__main__':
     unittest.main()

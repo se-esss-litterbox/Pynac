@@ -136,9 +136,9 @@ class Pynac(object):
                     self.dynacProc.stdin.write((str2write+'\r\n').encode())
                 except IOError:
                     break
+        self.dynacProc.stdin.close()
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
-        # self.dynacProc.stdin.close()
 
     def getXinds(self, *X):
         '''
@@ -325,12 +325,12 @@ def makePhaseSpaceList():
 
         return [PhaseSpace(data) for data in dataStrMatrix]
 
-def getNumberOfParticles():
+def getNumberOfParticles(path = ''):
     '''
     Queries the ``dynac.short`` file for the number of particles used in the
     simulation.
     '''
-    with open('dynac.short') as f:
+    with open(os.path.join(path, 'dynac.short')) as f:
         dataStr = ''.join(line for line in f.readlines())
         numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])
     return numOfParts

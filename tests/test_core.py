@@ -31,7 +31,7 @@ class PynacTest(unittest.TestCase):
 
     def test_getNumberOfParticles(self):
         self.pynacInstance.run()
-        p = getNumberOfParticles()
+        p = getNumberOfParticles(os.path.dirname(__file__))
         self.assertEqual(p, 1000)
 
 if __name__ == '__main__':

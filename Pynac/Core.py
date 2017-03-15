@@ -136,9 +136,9 @@ class Pynac(object):
                     self.dynacProc.stdin.write((str2write+'\r\n').encode())
                 except IOError:
                     break
-        self.dynacProc.stdin.close()
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
+        self.dynacProc.stdin.close()
 
     def getXinds(self, *X):
         '''

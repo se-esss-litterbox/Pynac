@@ -1,10 +1,13 @@
+import sys
+sys.path.append('../')
 import unittest
 import os
 from Pynac.Core import Pynac, getNumberOfParticles
 
 class PynacTest(unittest.TestCase):
     def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), '../datafiles/sns_mebt_dtl1.in'))
+        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+        self.pynacInstance._DEBUG = True
 
     def test_getPlotInds(self):
         self.assertEqual(self.pynacInstance.getNumPlots(), 7)

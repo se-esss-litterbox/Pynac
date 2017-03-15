@@ -70,6 +70,7 @@ class Pynac(object):
     as methods to manipulate the lattice, and to make the call to Dynac.
 
     '''
+    _DEBUG = False
     _fieldData = {
         'INPUT': 2,
         'RDBEAM': 5,
@@ -102,6 +103,9 @@ class Pynac(object):
         self.filename = filename
         with open(self.filename, 'r') as file:
             self.rawData = [' '.join(line.split()) for line in file]
+            if self._DEBUG:
+                print("rawData:")
+                print(self.rawData)
         self._parse()
 
     def run(self):
@@ -173,6 +177,8 @@ class Pynac(object):
         while ind < len(self.rawData):
             if not (self.rawData[ind] == '' or self.rawData[ind][0] == ';'):
                 ind = self._parsedChunk(ind)
+                if self._DEBUG:
+                    print(self.lattice[-1])
             ind += 1
 
     def _parsedChunk(self, currentInd):

@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 import unittest
 import os
 from Pynac.Core import Pynac

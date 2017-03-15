@@ -31,7 +31,6 @@ class PynacTest(unittest.TestCase):
 
     def test_PynacRuns(self):
         self.pynacInstance.run()
-        self.assertEqual(os.path.exists('/home/travis/build/se-esss-litterbox/Pynac/tests/dynac.short'), True)
         self.assertEqual(os.path.exists('/home/travis/build/se-esss-litterbox/Pynac/dynac.short'), True)
 
     # def test_getNumberOfParticles(self):

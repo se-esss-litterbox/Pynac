@@ -173,7 +173,13 @@ class Pynac(object):
         self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
 
     def _startDynacProc(self, stdin, stdout):
-        self.dynacProc = subp.Popen(['dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
+        # self.dynacProc = subp.Popen(['dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
+        self.dynacProc = subp.Popen(
+            ['dynacv6_0','--pipe'],
+            stdin=stdin,
+            stdout=stdout,
+            stderr=subp.PIPE
+        )
 
     def _loop(self, item):
         print(item)

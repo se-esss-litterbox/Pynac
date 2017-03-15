@@ -138,7 +138,7 @@ class Pynac(object):
                     break
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
-        self.dynacProc.stdin.close()
+        # self.dynacProc.stdin.close()
 
     def getXinds(self, *X):
         '''

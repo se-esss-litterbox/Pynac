@@ -114,15 +114,24 @@ class Pynac(object):
         '''
         self._startDynacProc(stdin=subp.PIPE, stdout=subp.PIPE)
         str2write = self.name + '\r\n'
+        if self._DEBUG:
+            with open('pynacrun.log', 'a') as f:
+                f.write(str2write)
         self.dynacProc.stdin.write(str2write.encode()) # The name field
         for ele in self.lattice:
             str2write = ele[0]
+            if self._DEBUG:
+                with open('pynacrun.log', 'a') as f:
+                    f.write(str2write + '\r\n')
             try:
-                self.dynacProc.stdin.write((ele[0] + '\r\n').encode())
+                self.dynacProc.stdin.write((str2write + '\r\n').encode())
             except IOError:
                 break
             for datum in ele[1]:
                 str2write = ' '.join([str(i) for i in datum])
+                if self._DEBUG:
+                    with open('pynacrun.log', 'a') as f:
+                        f.write(str2write+'\r\n')
                 try:
                     self.dynacProc.stdin.write((str2write+'\r\n').encode())
                 except IOError:

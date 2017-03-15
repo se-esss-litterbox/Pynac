@@ -8,7 +8,6 @@ class PynacTest(unittest.TestCase):
     def setUp(self):
         self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
         self.pynacInstance._DEBUG = True
-        print("HELLO!!!")
 
     def test_getPlotInds(self):
         self.assertEqual(self.pynacInstance.getNumPlots(), 7)

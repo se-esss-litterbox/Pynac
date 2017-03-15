@@ -9,11 +9,11 @@ script: python tests/test_everything.py
 branches:
   only:
     - master
-# before_install:
-#   - sudo apt-get -qq update
-#   - sudo apt-get install -y gfortran
-#   - curl http://dynac.web.cern.ch/dynac/beta/files/dynacv6r16.tar.gz | tar xz
-#   - cd source
-#   - gfortran dynacv6_0.f -o ../bin/dynacv6_0
-#   - export PATH=`pwd`/../bin:$PATH
-#   - cd ..
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y gfortran
+  - curl http://dynac.web.cern.ch/dynac/beta/files/dynacv6r16.tar.gz | tar xz
+  - cd source
+  - gfortran dynacv6_0.f -o ../bin/dynacv6_0
+  - export PATH=`pwd`/../bin:$PATH
+  - cd ../datafiles

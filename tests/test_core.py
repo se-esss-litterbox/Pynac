@@ -4,7 +4,7 @@ from Pynac.Core import Pynac, getNumberOfParticles
 
 class PynacTest(unittest.TestCase):
     def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'sns_mebt_dtl1.in'))
 
     def test_getPlotInds(self):
         self.assertEqual(self.pynacInstance.getNumPlots(), 7)

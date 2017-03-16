@@ -38,5 +38,25 @@ class PynacTest(unittest.TestCase):
         p = getNumberOfParticles()
         self.assertEqual(p, 1000)
 
+    def tearDown(self):
+        filelist = [
+            'beam_core.dst',
+            'beam_remove.dst',
+            'cavdat.out',
+            'dynac_in_pr.dst',
+            'dynac.dmp',
+            'dynac.long',
+            'dynac.print',
+            'dynac.short',
+            'emit.plot',
+            'lost_particles.data',
+            'pynacrun.log',
+        ]
+        for f in filelist:
+            try:
+                os.remove(f)
+            except FileNotFoundError:
+                pass
+
 if __name__ == '__main__':
     unittest.main()

@@ -3,12 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _tested on Python 3.2 to 3.6: https://travis-ci.org/se-esss-litterbox/Pynac
+.. _Maybe you should?: http://cyrille.rossant.net/why-you-should-move-to-python-3-now/
+
 Pynac
 =====
 
-Pynac is a Python3.x (apologies to Python2.x people) wrapper around Dynac; an executable used for simulating
+Pynac is a wrapper around Dynac; an executable used for simulating
 the motion of charged particles through accelerator beamlines.  More details can
 be found on `the Dynac homepage <https://dynac.web.cern.ch/dynac/dynac.html>`_.
+
+It has been thoroughly `tested on Python 3.2 to 3.6`_, but is known **not** to work
+on Python2.  Sorry to those people who haven't yet made the leap to Python3.
+(`Maybe you should?`_)
 
 .. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released,
              and so Pynac users will have to make do with the unofficial version

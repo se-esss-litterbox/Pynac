@@ -10,7 +10,9 @@ Pynac is a Python3.x (apologies to Python2.x people) wrapper around Dynac; an ex
 the motion of charged particles through accelerator beamlines.  More details can
 be found on `the Dynac homepage <https://dynac.web.cern.ch/dynac/dynac.html>`_.
 
-.. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released, and so Pynac users will have to make do with the unofficial version of Dynac included with Pynac.
+.. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released,
+             and so Pynac users will have to make do with the unofficial version
+             of Dynac included with Pynac.
 
 Pynac allows for a very interactive style of use, while also allowing large-scale
 simulations to be performed on multi-core, multi-CPU, machines without supervision.

@@ -15,7 +15,9 @@ by downloading the appropriate binary from from
 `the GFortranBinaries page`_.  Once Gfortran is installed, follow these
 steps to get Dynac running.
 
-.. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released, and so Pynac users will have to make do with the unofficial version of Dynac included with Pynac.
+.. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released,
+             and so Pynac users will have to make do with the unofficial version
+             of Dynac included with Pynac.
 
 #. While waiting for v17 to be officially released, an unofficial version can be download from `inside the Pynac GitHub folder`_.
 #. Compile -- ``gfortran dynac_unofficial.f -o dynacv6_0``.  Pynac currently assumes that the executable is called ``dynacv6_0``, but this will be configurable in future releases.

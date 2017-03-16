@@ -6,6 +6,9 @@ python:
 - '3.5'
 - '3.6'
 script: bash runTests.sh
+branches:
+  only:
+  - master
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -y gfortran
@@ -19,5 +22,5 @@ deploy:
     secure: hjOkPS2I+/USbtxFPWKds+3l/RkLUqlasll9fhiU7OppETpWTA4v2jx49taQEtYKGc3SDG1GO/3Ze0zQjZkvLKXd/KJ7YvATfOoRB5xvOIcXZn6h6QxX6Bf4vfdN6qFVBHqgg0nWfmnRfz4mrghbHXgMfurrJ+a7vRVoaO5jbFoMRZEU/kMf5MuMokbv55i2X90bn6jre6n7FzCMPn81KZjFiTp8ZxTJOVHkq9gzW/WAnDsgBvOCHHyZMxGTDQqshn2FXNddvA/GdXfOblRSz30S+5OHAReBhLKsK5yR6vsL6+9H71xTcH9zTd0szrkCwRvi/NkCBAOTPFEsfYsUW8gV+SNmC1h+qqhLBsCqoUZjXGivn4yj3oUr4GXe8kJyhzanYTVr86ohBRqnR4tAjlN0bOgt+Y/SuMtYU/J/cyFKVWqX+5c9IJqyHr9ktH9XXkNUAEGVCdxOtLj+1qoYTZY3dWXCVcaWTUpF/WeZOEFXM0lOcHLE7hEm8TAKpt8Ro0gbvFODSGmI/3BTnI2wGp3woQ6sN67Q54OCPYIqq7b7pgTwm3SR0Au28Gzj9JjQVkP7UF37VA4248AaveJqnHN5HkCBn+OxGk1/BMmOzcBRMD0Lz4aVqbq58Db/eGpHPv97tgvj8dyfaMAwasEJzUk1WD9+O5YoFwo0SIYHMXw=
   on:
     tags: true
-    distributions: sdist bdist_wheel
+    distributions: sdist
     repo: se-esss-litterbox/Pynac

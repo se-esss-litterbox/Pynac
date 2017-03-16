@@ -177,7 +177,7 @@ class Pynac(object):
             stdout=stdout,
             stderr=subp.PIPE
         )
-        if b'Error' in self.dynacProc.stdout.read():
+        if b'Error' in self.dynacProc.stdout.readline():
             raise RuntimeError('Installed version of Dynac should be upgraded to support the --pipe flag')
 
     def _loop(self, item):

@@ -9,5 +9,5 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y gfortran
   - mkdir bin
-  - gfortran dynacv6_0.f -o bin/dynacv6_0
+  - gfortran Pynac/dynacv6_0.f -o bin/dynacv6_0
   - export PATH=`pwd`/bin:$PATH

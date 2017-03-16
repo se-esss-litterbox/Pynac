@@ -12,7 +12,6 @@ Otherwise, `please contact the Dynac authors`_.
              and so Pynac users will have to make do with the unofficial version
              of Dynac included with Pynac.
 
-             **The Dynac authors are very unlikely
-             to be willing to offer help to people using this unofficial version
-             and so you may need to be patient enough to wait for the official
-             release of Dynac v17.**
+             **The Dynac authors are very unlikely to be willing to offer help
+             to people using this unofficial version and so you may need to be
+             patient enough to wait for the official release of Dynac v17.**

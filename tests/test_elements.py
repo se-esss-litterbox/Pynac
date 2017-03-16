@@ -11,7 +11,7 @@ class ElementTest(unittest.TestCase):
 
     def test_scaleQuad(self):
         quadinds = self.pynacInstance.getXinds('QUADRUPO')
-        quad = ele.Quad(self.pynacInstance.lattice[quadinds[0]])
+        quad = ele.Quad.from_dynacRepr(self.pynacInstance.lattice[quadinds[0]])
         quad.scaleField(0)
         self.assertEqual(quad.B.val, 0)
 

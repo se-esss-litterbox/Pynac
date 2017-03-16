@@ -13,13 +13,17 @@ class Quad:
     be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
     method.
     '''
-    def __init__(self, pynacRepr):
-        L = pynacRepr[1][0][0]
-        B = pynacRepr[1][0][1]
-        aperRadius = pynacRepr[1][0][2]
+    def __init__(self, L, B, aperRadius):
         self.L = Param(val = L, unit = 'cm')
         self.B = Param(val = B, unit = 'kG')
         self.aperRadius = Param(val = aperRadius, unit = 'cm')
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        L = pynacRepr[1][0][0]
+        B = pynacRepr[1][0][1]
+        aperRadius = pynacRepr[1][0][2]
+        return cls(L, B, aperRadius)
 
     def scaleField(self, scalingFactor):
         '''

@@ -9,7 +9,7 @@ import shutil
 import glob
 from collections import namedtuple
 import warnings
-from Pynac.Elements import Param
+from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
     '''
@@ -240,34 +240,6 @@ class Pynac(object):
 
     def _mightBeNumber(self, thing):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
-
-SingleDimPS = namedtuple('SingleDimPS', ['pos', 'mom', 'R12', 'normEmit', 'nonNormEmit'])
-try:
-    SingleDimPS.__doc__ = '''
-    Phase space parameters of the simulated bunch in a single dimension.
-    '''
-    SingleDimPS.pos.__doc__ = 'Position spread of the bunch'
-    SingleDimPS.mom.__doc__ = 'Momentum spread of the bunch'
-    SingleDimPS.R12.__doc__ = 'R(1,2) of the bunch'
-    SingleDimPS.normEmit.__doc__ = 'Normalised emittance of the bunch'
-    SingleDimPS.nonNormEmit.__doc__ = 'Non-normalised emittance of the bunch'
-except AttributeError:
-    warnings.warn('Namedtuples cannot have docstrings in this version of Python')
-
-CentreOfGravity = namedtuple('CentreOfGravity', ['x', 'xp', 'y', 'yp', 'KE', 'TOF'])
-try:
-    CentreOfGravity.__doc__ = '''
-    6D centre of gravity of the simulated bunch.  Each of the following is of type
-    elements.Parameter.
-    '''
-    CentreOfGravity.x.__doc__ = 'Horizontal location parameter'
-    CentreOfGravity.xp.__doc__ = 'Horizontal momentum parameter'
-    CentreOfGravity.y.__doc__ = 'Vertical location parameter'
-    CentreOfGravity.yp.__doc__ = 'Vertical momentum parameter'
-    CentreOfGravity.KE.__doc__ = 'Kinetic energy parameter'
-    CentreOfGravity.TOF.__doc__ = 'Time-of-flight parameter'
-except AttributeError:
-    warnings.warn('Namedtuples cannot have docstrings in this version of Python')
 
 class PhaseSpace:
     '''

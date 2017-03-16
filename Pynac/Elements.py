@@ -1,15 +1,4 @@
-from collections import namedtuple
-import warnings
-
-Param = namedtuple('Param', ['val', 'unit'])
-try:
-    Param.__doc__ = '''
-    A representation of a parameter as a value associated with a unit.
-    '''
-    Param.val.__doc__ = 'The numerical value of the parameter'
-    Param.unit.__doc__ = 'The unit used for this parameter'
-except AttributeError:
-    warnings.warn('Namedtuples cannot have docstrings in this version of Python')
+from Pynac.DataClasses import Param
 
 class Quad:
     '''

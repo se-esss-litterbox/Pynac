@@ -33,10 +33,10 @@ class PynacTest(unittest.TestCase):
         self.pynacInstance.run()
         self.assertEqual(os.path.exists('dynac.short'), True)
 
-    # def test_getNumberOfParticles(self):
-    #     self.pynacInstance.run()
-    #     p = getNumberOfParticles()
-    #     self.assertEqual(p, 1000)
+    def test_getNumberOfParticles(self):
+        self.pynacInstance.run()
+        p = getNumberOfParticles()
+        self.assertEqual(p, 1000)
 
 if __name__ == '__main__':
     unittest.main()

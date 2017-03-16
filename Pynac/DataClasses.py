@@ -1,3 +1,8 @@
+'''
+A collection of classes (mostly named tuples) that are useful for holding data
+related to accelerator elements and details of the simulated beam.
+'''
+
 from collections import namedtuple
 import warnings
 

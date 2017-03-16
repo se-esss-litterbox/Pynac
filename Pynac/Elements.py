@@ -1,3 +1,8 @@
+'''
+Accelerator elements, including methods for their manipulation and conversion to
+the representation expected by Dynac.
+'''
+
 from Pynac.DataClasses import Param
 
 class Quad:

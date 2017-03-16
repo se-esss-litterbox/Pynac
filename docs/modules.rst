@@ -7,3 +7,4 @@ Pynac
    core
    plotting
    elements
+   dataclasses 

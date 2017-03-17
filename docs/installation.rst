@@ -9,11 +9,11 @@ Installation involves two pretty simple steps.  Install Pynac, then install Dyna
 
 Dynac Installation
 ------------------
-Dynac is distributed as Fortran source.  You'll need Gfortran
-to compile it, so start by installing this using your favourite package manager, or
-by downloading the appropriate binary from from
-`the GFortranBinaries page`_.  Once Gfortran is installed, follow these
-steps to get Dynac running.
+Dynac is distributed as Fortran source.  You'll need Gfortranto compile it, so
+start by installing this using your favourite package manager (for example,
+``sudo apt-get install gfortran`` should work on Ubuntu/Debian-based systems), or
+by downloading the appropriate binary from from `the GFortranBinaries page`_.
+Once Gfortran is installed, follow these steps to get Dynac running.
 
 .. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released,
              and so Pynac users will have to make do with the unofficial version

@@ -17,14 +17,14 @@ class ElementTest(unittest.TestCase):
 
     def test_scaleCav(self):
         cavinds = self.pynacInstance.getXinds('CAVMC')
-        cav = ele.CavityAnalytic(self.pynacInstance.lattice[cavinds[0]])
+        cav = ele.CavityAnalytic.from_dynacRepr(self.pynacInstance.lattice[cavinds[0]])
         cav.scaleField(0)
         self.assertEqual(cav.fieldReduction.val, -100)
 
     def test_adjustPhase(self):
         adjustBy = 10
         cavinds = self.pynacInstance.getXinds('CAVMC')
-        cav = ele.CavityAnalytic(self.pynacInstance.lattice[cavinds[0]])
+        cav = ele.CavityAnalytic.from_dynacRepr(self.pynacInstance.lattice[cavinds[0]])
         originalPhase = cav.phase
         newPhase = ele.Param(val = originalPhase.val + adjustBy, unit = originalPhase.unit)
 

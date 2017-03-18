@@ -55,17 +55,21 @@ class CavityAnalytic:
     be put back into the ``lattice`` attribute of ``Pynac`` using the ``dynacRepresentation``
     method.
     '''
-    def __init__(self, pynacRepr):
-        cavID = int(pynacRepr[1][0][0])
-        xesln = float(pynacRepr[1][1][0])
-        phase = float(pynacRepr[1][1][1])
-        fieldReduction = float(pynacRepr[1][1][2])
-        isec = int(pynacRepr[1][1][3])
+    def __init__(self, phase, fieldReduction, cavID=0, xesln=0, isec=0):
         self.cavID = Param(val = cavID, unit = None)
         self.xesln = Param(val = xesln, unit = 'cm')
         self.phase = Param(val = phase, unit = 'deg')
         self.fieldReduction = Param(val = fieldReduction, unit = 'percent')
         self.isec = Param(val = isec, unit = None)
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        cavID = int(pynacRepr[1][0][0])
+        xesln = float(pynacRepr[1][1][0])
+        phase = float(pynacRepr[1][1][1])
+        fieldReduction = float(pynacRepr[1][1][2])
+        isec = int(pynacRepr[1][1][3])
+        return cls(phase, fieldReduction, cavID=0, xesln=0, isec=0)
 
     def adjustPhase(self, adjustment):
         '''

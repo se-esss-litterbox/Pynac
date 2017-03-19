@@ -116,3 +116,5 @@ dynacv6_0
 # Jupyter stuff
 dynacProc_*
 
+
+tests/elementCoverage.py

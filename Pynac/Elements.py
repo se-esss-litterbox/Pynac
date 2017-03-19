@@ -21,6 +21,9 @@ class Quad:
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
         L = float(pynacRepr[1][0][0])
+            '''
+            Construct a ``Quad`` instance from the Pynac lattice element
+            '''
         B = float(pynacRepr[1][0][1])
         aperRadius = float(pynacRepr[1][0][2])
         return cls(L, B, aperRadius)
@@ -35,7 +38,7 @@ class Quad:
 
     def dynacRepresentation(self):
         '''
-        Return the Dynac representation of this quadrupole instance.
+        Return the Pynac representation of this quadrupole instance.
         '''
         return ['QUADRUPO', [[self.L.val, self.B.val, self.aperRadius.val]]]
 
@@ -64,6 +67,9 @@ class CavityAnalytic:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
+        '''
+        Construct a ``CavityAnalytic`` instance from the Pynac lattice element
+        '''
         cavID = int(pynacRepr[1][0][0])
         xesln = float(pynacRepr[1][1][0])
         phase = float(pynacRepr[1][1][1])
@@ -99,11 +105,21 @@ class CavityAnalytic:
             ]]
 
 class Drift:
+    '''
+    A Pynac representation of a drift.
+
+    Before the simulation is run, any changes made to elements using this class have to
+    be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
+    method.
+    '''
     def __init__(self, L):
         self.L = Param(val = L, unit = 'cm')
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
+        '''
+        Construct a ``Drift`` instance from the Pynac lattice element
+        '''
         L = float(pynacRepr[1][0][0])
         return cls(L)
 
@@ -119,6 +135,13 @@ class Drift:
         return s
 
 class AccGap:
+    '''
+    A Pynac representation of an accelerating gap.
+
+    Before the simulation is run, any changes made to elements using this class have to
+    be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
+    method.
+    '''
     def __init__(self, L, TTF, TTFprime, TTFprimeprime, EField, phase, F, atten):
         self.L = Param(val = L, unit = 'cm')
         self.TTF = Param(val = TTF, unit = None)
@@ -141,6 +164,9 @@ class AccGap:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
+        '''
+        Construct a ``AccGap`` instance from the Pynac lattice element
+        '''
         pynacList = pynacRepr[1][0]
 
         L = float(pynacList[3])

@@ -117,3 +117,47 @@ class Drift:
         s = 'DRIFT:'
         s += ' L = ' + self.L.__repr__()
         return s
+
+class AccGap:
+    def __init__(self, L, TTF, TTFprime, TTFprimeprime, EField, phase, F, atten):
+        self.L = Param(val = L, unit = 'cm')
+        self.TTF = Param(val = TTF, unit = None)
+        self.TTFprime = Param(val = TTFprime, unit = None)
+        self.TTFprimeprime = Param(val = TTFprimeprime, unit = None)
+        self.EField = Param(val = EField, unit = 'MV/m')
+        self.phase = Param(val = phase, unit = 'deg')
+        self.F = Param(val = F, unit = 'MHz')
+        self.atten = Param(val = atten, unit = None)
+
+        # The following are dummy variables, not used by Dynac
+        self.gapID = Param(val = 0, unit = None)
+        self.energy = Param(val = 0, unit = 'MeV')
+        self.beta = Param(val = 0, unit = None)
+        self.S = Param(val = 0, unit = None)
+        self.SP = Param(val = 0, unit = None)
+        self.quadLength = Param(val = 0, unit = 'cm')
+        self.quadStrength = Param(val = 0, unit = 'kG/cm')
+        self.accumLen = Param(val = 0, unit = 'cm')
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        pynacList = pynacRepr[1][0]
+
+        L = float(pynacList[3])
+        TTF = float(pynacList[4])
+        TTFprime = float(pynacList[5])
+        TTFprimeprime = float(pynacList[13])
+        EField = float(pynacList[10])
+        phase = float(pynacList[11])
+        F = float(pynacList[14])
+        atten = float(pynacList[15])
+
+        gap = cls(L, TTF, TTFprime, TTFprimeprime, EField, phase, F, atten)
+        gap.gapID = Param(val = int(pynacList[0]), unit = None)
+        gap.energy = Param(val = float(pynacList[1]), unit = 'MeV')
+        gap.beta = Param(val = float(pynacList[2]), unit = None)
+        gap.S = Param(val = float(pynacList[6]), unit = None)
+        gap.SP = Param(val = float(pynacList[7]), unit = None)
+        gap.quadLength = Param(val = float(pynacList[8]), unit = 'cm')
+        gap.quadStrength = Param(val = float(pynacList[9]), unit = 'kG/cm')
+        gap.accumLen = Param(val = float(pynacList[12]), unit = 'cm')

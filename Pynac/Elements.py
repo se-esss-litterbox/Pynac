@@ -213,3 +213,44 @@ class AccGap:
             self.atten.val,
         ]
         return ['CAVSC', [details]]
+
+class Set4DAperture:
+    def __init__(self, energy, phase, x, y, radius, energyDefnFlag = 0):
+        if energyDefnFlag == 1 or energyDefnFlag == 11:
+            energyUnit = 'MeV'
+        else:
+            energyUnit = '\%'
+        self.energy = Param(val = energy, unit = energyUnit)
+        self.phase = Param(val = phase, unit = 'deg')
+        self.x = Param(val = x, unit = 'cm')
+        self.y = Param(val = y, unit = 'cm')
+        self.radius = Param(val = radius, unit = 'cm')
+        self.energyDefnFlag = Param(val = energyDefnFlag, unit = None)
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        '''
+        Construct a ``Set4DAperture`` instance from the Pynac lattice element
+        '''
+        energyDefnFlag = int(pynacRepr[1][0][0])
+        energy = float(pynacRepr[1][0][1])
+        phase = float(pynacRepr[1][0][2])
+        x = float(pynacRepr[1][0][3])
+        y = float(pynacRepr[1][0][4])
+        radius = float(pynacRepr[1][0][5])
+
+        return cls(energy, phase, x, y, radius, energyDefnFlag)
+
+    def dynacRepresentation(self):
+        '''
+        Return the Pynac representation of this Set4DAperture instance.
+        '''
+        details = [
+            self.energyDefnFlag.val,
+            self.energy.val,
+            self.phase.val,
+            self.x.val,
+            self.y.val,
+            self.radius.val,
+        ]
+        return ['REJECT', [details]]

@@ -33,6 +33,12 @@ class ElementTest(unittest.TestCase):
             newEle = ele.AccGap.from_dynacRepr(self.pynacInstance.lattice[ind])
             self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
 
+    def test_convertREJECT(self):
+        inds = self.pynacInstance.getXinds('REJECT')
+        for ind in inds:
+            newEle = ele.Set4DAperture.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
 class ElementManipulationTest(unittest.TestCase):
     def setUp(self):
         self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))

@@ -20,9 +20,9 @@ class Quad:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        L = pynacRepr[1][0][0]
-        B = pynacRepr[1][0][1]
-        aperRadius = pynacRepr[1][0][2]
+        L = float(pynacRepr[1][0][0])
+        B = float(pynacRepr[1][0][1])
+        aperRadius = float(pynacRepr[1][0][2])
         return cls(L, B, aperRadius)
 
     def scaleField(self, scalingFactor):

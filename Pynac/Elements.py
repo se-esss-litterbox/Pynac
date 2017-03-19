@@ -97,3 +97,23 @@ class CavityAnalytic:
             [self.cavID.val],
             [self.xesln.val, self.phase.val, self.fieldReduction.val, self.isec.val, 1],
             ]]
+
+class Drift:
+    def __init__(self, L):
+        self.L = Param(val = L, unit = 'cm')
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        L = pynacRepr[1][0][0]
+        return cls(L)
+
+    def dynacRepresentation(self):
+        '''
+        Return the Dynac representation of this drift instance.
+        '''
+        return ['DRIFT', [[self.L.val]]]
+
+    def __repr__(self):
+        s = 'DRIFT:'
+        s += ' L = ' + self.L.__repr__()
+        return s

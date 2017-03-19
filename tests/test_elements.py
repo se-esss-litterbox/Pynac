@@ -9,6 +9,34 @@ class ElementTest(unittest.TestCase):
     def setUp(self):
         self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
+    def test_convertDrift(self):
+        inds = self.pynacInstance.getXinds('DRIFT')
+        for ind in inds:
+            newEle = ele.Drift.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
+    def test_convertQUAD(self):
+        inds = self.pynacInstance.getXinds('QUADRUPO')
+        for ind in inds:
+            newEle = ele.Quad.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
+    def test_convertCavityAnalytic(self):
+        inds = self.pynacInstance.getXinds('CAVMC')
+        for ind in inds:
+            newEle = ele.CavityAnalytic.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
+    def test_convertCAVSC(self):
+        inds = self.pynacInstance.getXinds('CAVSC')
+        for ind in inds:
+            newEle = ele.AccGap.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
+class ElementManipulationTest(unittest.TestCase):
+    def setUp(self):
+        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+
     def test_scaleQuad(self):
         quadinds = self.pynacInstance.getXinds('QUADRUPO')
         quad = ele.Quad.from_dynacRepr(self.pynacInstance.lattice[quadinds[0]])
@@ -32,21 +60,6 @@ class ElementTest(unittest.TestCase):
         self.assertEqual(cav.phase, newPhase)
         cav.adjustPhase(-adjustBy)
         self.assertEqual(cav.phase, originalPhase)
-
-    def test_convertQUAD(self):
-        inds = self.pynacInstance.getXinds('QUADRUPO')
-        newEle = ele.Quad.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
-        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
-
-    def test_convertCavityAnalytic(self):
-        inds = self.pynacInstance.getXinds('CAVMC')
-        newEle = ele.CavityAnalytic.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
-        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
-
-    def test_convertCAVSC(self):
-        inds = self.pynacInstance.getXinds('CAVSC')
-        newEle = ele.AccGap.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
-        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
 
 if __name__ == '__main__':
     unittest.main()

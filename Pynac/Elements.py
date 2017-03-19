@@ -20,10 +20,10 @@ class Quad:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
+        '''
+        Construct a ``Quad`` instance from the Pynac lattice element
+        '''
         L = float(pynacRepr[1][0][0])
-            '''
-            Construct a ``Quad`` instance from the Pynac lattice element
-            '''
         B = float(pynacRepr[1][0][1])
         aperRadius = float(pynacRepr[1][0][2])
         return cls(L, B, aperRadius)

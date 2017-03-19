@@ -69,7 +69,7 @@ class CavityAnalytic:
         phase = float(pynacRepr[1][1][1])
         fieldReduction = float(pynacRepr[1][1][2])
         isec = int(pynacRepr[1][1][3])
-        return cls(phase, fieldReduction, cavID=0, xesln=0, isec=0)
+        return cls(phase, fieldReduction, cavID, xesln, isec)
 
     def adjustPhase(self, adjustment):
         '''
@@ -104,7 +104,7 @@ class Drift:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        L = pynacRepr[1][0][0]
+        L = float(pynacRepr[1][0][0])
         return cls(L)
 
     def dynacRepresentation(self):
@@ -161,3 +161,29 @@ class AccGap:
         gap.quadLength = Param(val = float(pynacList[8]), unit = 'cm')
         gap.quadStrength = Param(val = float(pynacList[9]), unit = 'kG/cm')
         gap.accumLen = Param(val = float(pynacList[12]), unit = 'cm')
+
+        return gap
+
+    def dynacRepresentation(self):
+        '''
+        Return the Dynac representation of this accelerating gap instance.
+        '''
+        details = [
+            self.gapID.val,
+            self.energy.val,
+            self.beta.val,
+            self.L.val,
+            self.TTF.val,
+            self.TTFprime.val,
+            self.S.val,
+            self.SP.val,
+            self.quadLength.val,
+            self.quadStrength.val,
+            self.EField.val,
+            self.phase.val,
+            self.accumLen.val,
+            self.TTFprimeprime.val,
+            self.F.val,
+            self.atten.val,
+        ]
+        return ['CAVSC', [details]]

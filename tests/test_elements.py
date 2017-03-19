@@ -33,5 +33,20 @@ class ElementTest(unittest.TestCase):
         cav.adjustPhase(-adjustBy)
         self.assertEqual(cav.phase, originalPhase)
 
+    def test_convertQUAD(self):
+        inds = self.pynacInstance.getXinds('QUADRUPO')
+        newEle = ele.Quad.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
+        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
+
+    def test_convertCavityAnalytic(self):
+        inds = self.pynacInstance.getXinds('CAVMC')
+        newEle = ele.CavityAnalytic.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
+        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
+
+    def test_convertCAVSC(self):
+        inds = self.pynacInstance.getXinds('CAVSC')
+        newEle = ele.AccGap.from_dynacRepr(self.pynacInstance.lattice[inds[0]])
+        self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[inds[0]])
+
 if __name__ == '__main__':
     unittest.main()

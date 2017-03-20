@@ -281,3 +281,20 @@ class Buncher:
             self.apertureRadius.val,
         ]
         return ['BUNCHER', [details]]
+
+class AccFieldFromFile:
+    def __init__(self, filename, scaleFactor):
+        self.filename = filename
+        self.scaleFactor = Param(val = scaleFactor, unit = None)
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        filename = pynacRepr[1][0][0]
+        scaleFactor = float(pynacRepr[1][1][0])
+        return cls(filename, scaleFactor)
+
+    def dynacRepresentation(self):
+        '''
+        Return the Pynac representation of this AccFieldFromFile instance.
+        '''
+        return ['FIELD', [[self.filename], [self.scaleFactor.val]]]

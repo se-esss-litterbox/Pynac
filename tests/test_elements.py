@@ -5,7 +5,7 @@ import os
 from Pynac.Core import Pynac
 from Pynac import Elements as ele
 
-class ElementTest(unittest.TestCase):
+class ElementConversionTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
     def test_convertDrift(self):
@@ -42,6 +42,12 @@ class ElementTest(unittest.TestCase):
         inds = self.pynacInstance.getXinds('BUNCHER')
         for ind in inds:
             newEle = ele.Buncher.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
+    def test_convertFIELD(self):
+        inds = self.pynacInstance.getXinds('FIELD')
+        for ind in inds:
+            newEle = ele.AccFieldFromFile.from_dynacRepr(self.pynacInstance.lattice[ind])
             self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
 
 class ElementManipulationTest(unittest.TestCase):

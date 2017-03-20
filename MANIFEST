@@ -2,6 +2,7 @@
 setup.cfg
 setup.py
 Pynac/Core.py
+Pynac/DataClasses.py
 Pynac/Elements.py
 Pynac/Plotting.py
 Pynac/__init__.py

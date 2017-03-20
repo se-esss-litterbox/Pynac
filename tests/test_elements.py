@@ -6,8 +6,7 @@ from Pynac.Core import Pynac
 from Pynac import Elements as ele
 
 class ElementTest(unittest.TestCase):
-    def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+    pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
     def test_convertDrift(self):
         inds = self.pynacInstance.getXinds('DRIFT')
@@ -39,9 +38,14 @@ class ElementTest(unittest.TestCase):
             newEle = ele.Set4DAperture.from_dynacRepr(self.pynacInstance.lattice[ind])
             self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
 
+    def test_convertBUNCHER(self):
+        inds = self.pynacInstance.getXinds('BUNCHER')
+        for ind in inds:
+            newEle = ele.Buncher.from_dynacRepr(self.pynacInstance.lattice[ind])
+            self.assertEqual(newEle.dynacRepresentation(), self.pynacInstance.lattice[ind])
+
 class ElementManipulationTest(unittest.TestCase):
-    def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+    pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
     def test_scaleQuad(self):
         quadinds = self.pynacInstance.getXinds('QUADRUPO')

@@ -3,6 +3,19 @@ sys.path.append('../')
 import unittest
 import os
 from Pynac.Core import Pynac, getNumberOfParticles
+import Pynac.Elements as pyEle
+
+class NewPynacLatticeTest(unittest.TestCase):
+    pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+
+    def test_conversion2PynacWorks(self):
+        newLattice = []
+        for i in self.pynacInstance.pynacLattice:
+            try:
+                newLattice.append(i.dynacRepresentation())
+            except AttributeError:
+                newLattice.append(i)
+        self.assertEqual(self.pynacInstance.lattice, newLattice)
 
 class PynacTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))

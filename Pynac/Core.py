@@ -10,6 +10,7 @@ import glob
 from collections import namedtuple
 import warnings
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
+import Pynac.Elements as pyEle
 
 def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
     '''
@@ -107,6 +108,9 @@ class Pynac(object):
                 print("rawData:")
                 print(self.rawData)
         self._parse()
+        self.pynacLattice = []
+        for ele in self.lattice:
+            self.pynacLattice.append(EleFromPynac(ele))
 
     def run(self):
         '''
@@ -314,3 +318,11 @@ def getNumberOfParticles():
         dataStr = ''.join(line for line in f.readlines())
         numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])
     return numOfParts
+
+def EleFromPynac(pynacRepr):
+    try:
+        constructor = getattr(pyEle, pyEle._dynac2pynac[pynacRepr[0]])
+        obj = constructor.from_dynacRepr(pynacRepr)
+    except AttributeError:
+        obj = pynacRepr
+    return obj

@@ -4,6 +4,17 @@ the representation expected by Dynac.
 '''
 
 from Pynac.DataClasses import Param
+from collections import defaultdict
+
+_dynac2pynac = defaultdict(lambda: 'NotImplemented', {
+    'QUADRUPO': 'Quad',
+    'CAVMC': 'CavityAnalytic',
+    'DRIFT': 'Drift',
+    'CAVSC': 'AccGap',
+    'REJECT': 'Set4DAperture',
+    'BUNCHER': 'Buncher',
+    'FIELD': 'AccFieldFromFile',
+})
 
 class Quad:
     '''

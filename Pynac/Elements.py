@@ -254,3 +254,30 @@ class Set4DAperture:
             self.radius.val,
         ]
         return ['REJECT', [details]]
+
+class Buncher:
+    def __init__(self, voltage, phase, harmonicNum, apertureRadius):
+        self.voltage = Param(val = voltage, unit = 'MV')
+        self.phase = Param(val = phase, unit = 'deg')
+        self.harmonicNum = Param(val = harmonicNum, unit = None)
+        self.apertureRadius = Param(val = apertureRadius, unit = 'cm')
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        voltage = float(pynacRepr[1][0][0])
+        phase = float(pynacRepr[1][0][1])
+        harmonicNum = float(pynacRepr[1][0][2])
+        apertureRadius = float(pynacRepr[1][0][3])
+        return cls(voltage, phase, harmonicNum, apertureRadius)
+
+    def dynacRepresentation(self):
+        '''
+        Return the Pynac representation of this Set4DAperture instance.
+        '''
+        details = [
+            self.voltage.val,
+            self.phase.val,
+            self.harmonicNum.val,
+            self.apertureRadius.val,
+        ]
+        return ['BUNCHER', [details]]

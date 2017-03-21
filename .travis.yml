@@ -15,6 +15,8 @@ before_install:
 - mkdir bin
 - gfortran Pynac/dynac_unofficial.f -o bin/dynacv6_0
 - export PATH=`pwd`/bin:$PATH
+- dynacv6_0 ESS_with_SC_ana.in
+- mv emit.plot ref_emit.plot
 deploy:
   provider: pypi
   user: smolloy

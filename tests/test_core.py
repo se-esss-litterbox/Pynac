@@ -53,7 +53,7 @@ class RunningPynacTest(unittest.TestCase):
     def tearDownClass(self):
         # Python3.2 doesn't have FileNotFoundError, so make the following tries to
         # get it, and defaults to IOError if it's not found.
-        FileNotFound = getattr(__builtins__,'FileNotFoundError', IOError)
+        FileNotFound = getattr(__builtins__,'FileNotFoundError', OSError)
 
         filelist = [
             'beam_core.dst',

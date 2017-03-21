@@ -55,9 +55,9 @@ class Quad:
 
     def __repr__(self):
         s = 'QUAD:'
-        s += ' L = ' + self.L.__repr__()
-        s += ' B = ' + self.B.__repr__()
-        s += ' aperRadius = ' + self.aperRadius.__repr__()
+        s += ' | L = ' + self.L.__repr__()
+        s += ' | B = ' + self.B.__repr__()
+        s += ' | aperRadius = ' + self.aperRadius.__repr__()
         return s
 
 class CavityAnalytic:
@@ -115,6 +115,12 @@ class CavityAnalytic:
             [self.xesln.val, self.phase.val, self.fieldReduction.val, self.isec.val, 1],
             ]]
 
+    def __repr__(self):
+        s = 'CavityAnalytic:'
+        s += ' | phase = ' + self.phase.__repr__()
+        s += ' | fieldReduction = ' + self.fieldReduction.__repr__()
+        return s
+
 class Drift:
     '''
     A Pynac representation of a drift.
@@ -142,7 +148,7 @@ class Drift:
 
     def __repr__(self):
         s = 'DRIFT:'
-        s += ' L = ' + self.L.__repr__()
+        s += ' | L = ' + self.L.__repr__()
         return s
 
 class AccGap:
@@ -225,12 +231,20 @@ class AccGap:
         ]
         return ['CAVSC', [details]]
 
+    def __repr__(self):
+        s = 'AccGap:'
+        s += ' | L = ' + self.L.__repr__()
+        s += ' | Field = ' + self.EField.__repr__()
+        s += ' | phase = ' + self.phase.__repr__()
+        s += ' | freq = ' + self.F.__repr__()
+        return s
+
 class Set4DAperture:
     def __init__(self, energy, phase, x, y, radius, energyDefnFlag = 0):
         if energyDefnFlag == 1 or energyDefnFlag == 11:
             energyUnit = 'MeV'
         else:
-            energyUnit = '\%'
+            energyUnit = '%'
         self.energy = Param(val = energy, unit = energyUnit)
         self.phase = Param(val = phase, unit = 'deg')
         self.x = Param(val = x, unit = 'cm')
@@ -266,6 +280,15 @@ class Set4DAperture:
         ]
         return ['REJECT', [details]]
 
+    def __repr__(self):
+        s = 'Set4DAperture:'
+        s += ' | E: ' + self.energy.__repr__()
+        s += ' | Phase: ' + self.phase.__repr__()
+        s += ' | x: ' + self.x.__repr__()
+        s += ' | y: ' + self.y.__repr__()
+        s += ' | radius: ' + self.radius.__repr__()
+        return s
+
 class Buncher:
     def __init__(self, voltage, phase, harmonicNum, apertureRadius):
         self.voltage = Param(val = voltage, unit = 'MV')
@@ -293,6 +316,14 @@ class Buncher:
         ]
         return ['BUNCHER', [details]]
 
+    def __repr__(self):
+        s = 'BUNCHER:'
+        s += ' | V: ' + self.voltage.__repr__()
+        s += ' | Phase: ' + self.phase.__repr__()
+        s += ' | Harmonic: ' + self.harmonicNum.__repr__()
+        s += ' | Aperture: ' + self.apertureRadius.__repr__()
+        return s
+
 class AccFieldFromFile:
     def __init__(self, filename, scaleFactor):
         self.filename = filename
@@ -309,3 +340,9 @@ class AccFieldFromFile:
         Return the Pynac representation of this AccFieldFromFile instance.
         '''
         return ['FIELD', [[self.filename], [self.scaleFactor.val]]]
+
+    def __repr__(self):
+        s = 'AccFieldFile: '
+        s += self.filename
+        s += ' | Scale: ' + self.scaleFactor.__repr__()
+        return s

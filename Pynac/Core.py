@@ -108,9 +108,6 @@ class Pynac(object):
                 print("rawData:")
                 print(self.rawData)
         self._parse()
-        self.pynacLattice = []
-        for ele in self.lattice:
-            self.pynacLattice.append(EleFromPynac(ele))
 
     def run(self):
         '''
@@ -122,7 +119,11 @@ class Pynac(object):
             with open('pynacrun.log', 'a') as f:
                 f.write(str2write)
         self.dynacProc.stdin.write(str2write.encode()) # The name field
-        for ele in self.lattice:
+        for pynEle in self.lattice:
+            try:
+                ele = pynEle.dynacRepresentation()
+            except AttributeError:
+                ele = pynEle
             str2write = ele[0]
             if self._DEBUG:
                 with open('pynacrun.log', 'a') as f:
@@ -150,7 +151,7 @@ class Pynac(object):
         type matches the input string.  Multiple input strings can be given, either
         as a comma-separated list or as a genuine Python list.
         '''
-        return [i for i,x in enumerate(self.lattice) for y in X if x[0] == y]
+        return [i for i,x in enumerate(self.lattice) for y in X if DynacFromEle(x) == y]
 
     def getPlotInds(self):
         '''
@@ -226,7 +227,7 @@ class Pynac(object):
                     dat.append([float(i) if self._mightBeNumber(i) else int(i) for i in term.split(' ')])
                 except ValueError:
                     dat.append([term])
-        self.lattice.append([dynacStr, dat])
+        self.lattice.append(EleFromPynac([dynacStr, dat]))
         return currentInd + numFields
 
     def _getNumFieldsFromiTwiss(self, ind):
@@ -318,6 +319,13 @@ def getNumberOfParticles():
         dataStr = ''.join(line for line in f.readlines())
         numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])
     return numOfParts
+
+def DynacFromEle(ele):
+    try:
+        dynStr = ele.dynacRepresentation()[0]
+    except AttributeError:
+        dynStr = ele[0]
+    return dynStr
 
 def EleFromPynac(pynacRepr):
     try:

@@ -51,6 +51,10 @@ class RunningPynacTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
+        # Python3.2 doesn't have FileNotFoundError, so make the following tries to
+        # get it, and defaults to IOError if it's not found.
+        FileNotFound = getattr(__builtins__,'FileNotFoundError', IOError)
+
         filelist = [
             'beam_core.dst',
             'beam_remove.dst',
@@ -67,7 +71,7 @@ class RunningPynacTest(unittest.TestCase):
         for f in filelist:
             try:
                 os.remove(f)
-            except FileNotFoundError:
+            except FileNotFound:
                 pass
 
 if __name__ == '__main__':

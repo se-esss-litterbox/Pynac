@@ -5,18 +5,6 @@ import os
 from Pynac.Core import Pynac, getNumberOfParticles
 import Pynac.Elements as pyEle
 
-# class NewPynacLatticeTest(unittest.TestCase):
-#     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
-#
-#     def test_conversion2PynacWorks(self):
-#         newLattice = []
-#         for i in self.pynacInstance.pynacLattice:
-#             try:
-#                 newLattice.append(i.dynacRepresentation())
-#             except AttributeError:
-#                 newLattice.append(i)
-#         self.assertEqual(self.pynacInstance.lattice, newLattice)
-
 class PynacTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
@@ -48,11 +36,18 @@ class RunningPynacTest(unittest.TestCase):
         self.pynacInstance.run()
 
     def test_PynacRuns(self):
-        self.assertEqual(os.path.exists('dynac.short'), True)
+        self.assertTrue(os.path.exists('dynac.short'))
+
+    def test_PynacIsIdenticalToDynac(self):
+        with open('emit.plot') as f:
+            pynacFile = ''.join(f.readlines())
+        with open('ref_emit.plot') as f:
+            dynacFile = ''.join(f.readlines())
+        self.assertEqual(pynacFile, dynacFile)
 
     def test_getNumberOfParticles(self):
         p = getNumberOfParticles()
-        self.assertEqual(p, 100)
+        self.assertEqual(p, 1000)
 
     @classmethod
     def tearDownClass(self):

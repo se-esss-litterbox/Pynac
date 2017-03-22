@@ -5,3 +5,4 @@ Usage examples
 
    PynacPynPlt
    ErrorStudiesInParallel
+   BuildABeam

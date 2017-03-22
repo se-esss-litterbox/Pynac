@@ -100,14 +100,22 @@ class Pynac(object):
         'T3D': 0
     }
 
-    def __init__(self, filename):
-        self.filename = filename
-        with open(self.filename, 'r') as file:
-            self.rawData = [' '.join(line.split()) for line in file]
-            if self._DEBUG:
-                print("rawData:")
-                print(self.rawData)
-        self._parse()
+    def __init__(self, filename=None):
+        if filename:
+            self.filename = filename
+            with open(self.filename, 'r') as file:
+                self.rawData = [' '.join(line.split()) for line in file]
+                if self._DEBUG:
+                    print("rawData:")
+                    print(self.rawData)
+            self._parse()
+
+    @classmethod
+    def from_lattice(cls, name, lattice):
+        pyn = cls()
+        pyn.name = name
+        pyn.lattice = lattice
+        return pyn
 
     def run(self):
         '''
@@ -334,3 +342,4 @@ def EleFromPynac(pynacRepr):
     except AttributeError:
         obj = pynacRepr
     return obj
+    display(controls)

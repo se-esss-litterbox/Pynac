@@ -29,6 +29,12 @@ class PynacTest(unittest.TestCase):
         nonsenseinds = self.pynacInstance.getXinds('BLAHBLAHBLAH')
         self.assertEqual(len(nonsenseinds), 0)
 
+    def test_setNewRDBeamFile(self):
+        newfilename = 'testfilename.in'
+        self.pynacInstance.setNewRDBEAMfile(newfilename)
+        inds = self.pynacInstance.getXinds('RDBEAM')
+        self.assertEqual(self.pynacInstance.lattice[inds[0]][1][0][0], 'testfilename.in')
+
 class RunningPynacTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):

@@ -9,6 +9,13 @@ import shutil
 import glob
 from collections import namedtuple
 import warnings
+from IPython.display import display
+import ipywidgets as widgets
+from ipywidgets import HBox, VBox
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+from bokeh.layouts import gridplot
+from bokeh.io import show, push_notebook
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
 
@@ -342,4 +349,241 @@ def EleFromPynac(pynacRepr):
     except AttributeError:
         obj = pynacRepr
     return obj
+
+def buildABeam():
+    betaX = widgets.FloatSlider(
+        value=7.5,
+        min=0.01,
+        max=20.0,
+        step=0.01,
+        description='betaX:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    alphaX = widgets.FloatSlider(
+        value=0.0,
+        min=-5.0,
+        max=5.0,
+        step=0.01,
+        description='alphaX:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    emitX = widgets.FloatSlider(
+        value=0.5,
+        min=0.01,
+        max=10.0,
+        step=0.01,
+        description='emitX:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    betaY = widgets.FloatSlider(
+        value=7.5,
+        min=0.01,
+        max=20.0,
+        step=0.01,
+        description='betaY:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    alphaY = widgets.FloatSlider(
+        value=0.0,
+        min=-5.0,
+        max=5.0,
+        step=0.01,
+        description='alphaY:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    emitY = widgets.FloatSlider(
+        value=0.5,
+        min=0.01,
+        max=10.0,
+        step=0.01,
+        description='emitY:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    betaZ = widgets.FloatSlider(
+        value=7.5,
+        min=0.01,
+        max=20.0,
+        step=0.01,
+        description='betaZ:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    alphaZ = widgets.FloatSlider(
+        value=0.0,
+        min=-5.0,
+        max=5.0,
+        step=0.01,
+        description='alphaZ:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    emitZ = widgets.FloatSlider(
+        value=500,
+        min=1.0,
+        max=1000.0,
+        step=1.0,
+        description='emitZ:',
+        disabled=False,
+        continuous_update=False,
+    )
+
+    def getPynacInput():
+        beam = ['GEBEAM', [
+            [4, 1],
+            [352.21e6, 1000],
+            [0, 0, 0, 0, 0, 0],
+            [alphaX.value, betaX.value, emitX.value],
+            [alphaY.value, betaY.value, emitY.value],
+            [alphaZ.value, betaZ.value, emitZ.value],
+        ]]
+        return beam
+
+    def getDynacInput():
+        beam = 'GEBEAM\r\n'
+        beam += '4 1\r\n'
+        beam += '352.21e6 1000\r\n'
+        beam += '0 0 0 0 0 0\r\n'
+        beam += '%f %f %f\r\n' % (alphaX.value, betaX.value, emitX.value)
+        beam += '%f %f %f\r\n' % (alphaY.value, betaY.value, emitY.value)
+        beam += '%f %f %f' % (alphaZ.value, betaZ.value, emitZ.value)
+        return beam
+
+    cssHeightStr = '150px'
+    viewBtn = widgets.Button(description="View Pynac Input")
+    pynacViewArea = widgets.Textarea()
+    pynacViewArea.layout.height = cssHeightStr
+    dynacViewArea = widgets.Textarea()
+    dynacViewArea.layout.height = cssHeightStr
+
+    pynacViewArea.value = getPynacInput().__str__()
+    dynacViewArea.value = getDynacInput()
+
+    lattice = []
+    lattice.append(getPynacInput())
+    lattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
+    lattice.append(['REFCOG', [[0]]])
+    lattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
+    lattice.append(['STOP', []])
+
+    test = Pynac.from_lattice("Zero-length lattice for beam generation", lattice)
+    test.run()
+
+    with open('emit.plot') as f:
+        for i in range(204):
+            f.readline()
+        numParts = int(f.readline())
+        x, xp = [], []
+        for i in range(numParts):
+            dat = f.readline().split()
+            x.append(float(dat[0]))
+            xp.append(float(dat[1]))
+        f.readline()
+        for i in range(202):
+            f.readline()
+        y, yp = [], []
+        for i in range(numParts):
+            dat = f.readline().split()
+            y.append(float(dat[0]))
+            yp.append(float(dat[1]))
+        f.readline()
+        for i in range(203):
+            f.readline()
+        z, zp = [], []
+        for i in range(numParts):
+            dat = f.readline().split()
+            z.append(float(dat[0]))
+            zp.append(float(dat[1]))
+
+    dataSource = ColumnDataSource(data=dict(x=x, xp=xp, y=y, yp=yp, z=z, zp=zp))
+
+    p0 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
+    p0.xaxis.axis_label = 'Horizontal position'
+    p0.yaxis.axis_label = 'Horizontal angle'
+    p0.circle('x', 'xp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource)
+
+    p1 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
+    p1.xaxis.axis_label = 'Vertical position'
+    p1.yaxis.axis_label = 'Vertical angle'
+    p1.circle('y', 'yp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+
+    p2 = figure(plot_height=250, plot_width=296, y_range=(-0.1, 0.1), x_range=(-150, 150))
+    p2.xaxis.axis_label = 'Longitudinal phase'
+    p2.yaxis.axis_label = 'Longitudinal energy'
+    p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+
+    grid = gridplot([[p0, p1, p2]])
+    show(grid, notebook_handle=True)
+    push_notebook()
+
+    def on_button_clicked(b):
+        pynacViewArea.value = getPynacInput().__str__()
+        dynacViewArea.value = getDynacInput()
+        lattice[0] = getPynacInput()
+        test = Pynac.from_lattice("Zero-length lattice for beam generation", lattice)
+        test.run()
+        with open('emit.plot') as f:
+            for i in range(204):
+                f.readline()
+            numParts = int(f.readline())
+            x, xp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                x.append(float(dat[0]))
+                xp.append(float(dat[1]))
+            f.readline()
+            for i in range(202):
+                f.readline()
+            y, yp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                y.append(float(dat[0]))
+                yp.append(float(dat[1]))
+            f.readline()
+            for i in range(203):
+                f.readline()
+            z, zp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                z.append(float(dat[0]))
+                zp.append(float(dat[1]))
+        dataSource.data['x'] = x
+        dataSource.data['xp'] = xp
+        dataSource.data['y'] = y
+        dataSource.data['yp'] = yp
+        dataSource.data['z'] = z
+        dataSource.data['zp'] = zp
+        push_notebook()
+
+    label_layout = widgets.Layout(width='100%')
+    twissXLabel = widgets.Label(value = "Horizontal Twiss", layout = label_layout)
+    twissYLabel = widgets.Label(value = "Vertical Twiss", layout = label_layout)
+    twissZLabel = widgets.Label(value = "Longitudinal Twiss", layout = label_layout)
+
+    for slider in [betaX, alphaX, emitX, betaY, alphaY, emitY, betaZ, alphaZ, emitZ]:
+        slider.observe(on_button_clicked)
+
+    pynacBoxLabel = widgets.Label(value = "Pynac Input", layout = label_layout)
+    dynacBoxLabel = widgets.Label(value = "Dynac Input", layout = label_layout)
+
+    controls = VBox([
+        HBox([
+            VBox([twissXLabel, betaX, alphaX, emitX, pynacBoxLabel, pynacViewArea]),
+            VBox([twissYLabel, betaY, alphaY, emitY, dynacBoxLabel, dynacViewArea]),
+            VBox([twissZLabel, betaZ, alphaZ, emitZ]),
+        ]),
+    ])
     display(controls)

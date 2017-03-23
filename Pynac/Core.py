@@ -11,65 +11,13 @@ from collections import namedtuple
 import warnings
 from IPython.display import display
 import ipywidgets as widgets
-from ipywidgets import HBox, VBox
+from ipywidgets import HBox, VBox, Layout, Box
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot
 from bokeh.io import show, push_notebook
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
-
-def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
-    '''
-    Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
-    number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
-    and ``pynacInSubDirectory``.
-    '''
-    with ProcessPoolExecutor(max_workers = max_workers) as executor:
-        tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
-    exc = [task.exception() for task in tasks if task.exception()]
-    if exc:
-        return exc
-    else:
-        return "No errors encountered"
-
-def doSingleDynacProcess(num, filelist, pynacFunc):
-    '''
-    Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
-    docstring for that context manager to understand the meaning of the ``num`` and
-    ``filelist`` inputs.
-
-    The primary purpose of this function is to enable multiprocess use of Pynac via
-    the ``multiProcessPynac`` function.
-    '''
-    with pynacInSubDirectory(num, filelist):
-        pynacFunc()
-
-@contextmanager
-def pynacInSubDirectory(num, filelist):
-    '''
-    A context manager to create a new directory, move the files listed in ``filelist``
-    to that directory, and change to that directory before handing control back to
-    context.  The closing action is to change back to the original directory.
-
-    The directory name is based on the ``num`` input, and if it already exists, it
-    will be deleted upon entering the context.
-
-    The primary purpose of this function is to enable multiprocess use of Pynac via
-    the ``multiProcessPynac`` function.
-    '''
-    print('Running %d' % num)
-    newDir = 'dynacProc_%04d' % num
-    if os.path.isdir(newDir):
-        shutil.rmtree(newDir)
-    os.mkdir(newDir)
-    for f in filelist:
-        shutil.copy(f, newDir)
-    os.chdir(newDir)
-
-    yield
-
-    os.chdir('..')
 
 class Pynac(object):
     '''
@@ -261,6 +209,290 @@ class Pynac(object):
     def _mightBeNumber(self, thing):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
 
+class Builder:
+    def buildABeamTool(self):
+        betaX = widgets.FloatSlider(
+            value=7.5,
+            min=0.01,
+            max=20.0,
+            step=0.01,
+            description='betaX:',
+            disabled=False,
+            continuous_update=False,
+        )
+        alphaX = widgets.FloatSlider(
+            value=0.0,
+            min=-5.0,
+            max=5.0,
+            step=0.01,
+            description='alphaX:',
+            disabled=False,
+            continuous_update=False,
+        )
+        emitX = widgets.FloatSlider(
+            value=0.5,
+            min=0.01,
+            max=10.0,
+            step=0.01,
+            description='emitX:',
+            disabled=False,
+            continuous_update=False,
+        )
+        betaY = widgets.FloatSlider(
+            value=7.5,
+            min=0.01,
+            max=20.0,
+            step=0.01,
+            description='betaY:',
+            disabled=False,
+            continuous_update=False,
+        )
+        alphaY = widgets.FloatSlider(
+            value=0.0,
+            min=-5.0,
+            max=5.0,
+            step=0.01,
+            description='alphaY:',
+            disabled=False,
+            continuous_update=False,
+        )
+        emitY = widgets.FloatSlider(
+            value=0.5,
+            min=0.01,
+            max=10.0,
+            step=0.01,
+            description='emitY:',
+            disabled=False,
+            continuous_update=False,
+        )
+        betaZ = widgets.FloatSlider(
+            value=7.5,
+            min=0.01,
+            max=20.0,
+            step=0.01,
+            description='betaZ:',
+            disabled=False,
+            continuous_update=False,
+        )
+        alphaZ = widgets.FloatSlider(
+            value=0.0,
+            min=-5.0,
+            max=5.0,
+            step=0.01,
+            description='alphaZ:',
+            disabled=False,
+            continuous_update=False,
+        )
+        emitZ = widgets.FloatSlider(
+            value=500,
+            min=1.0,
+            max=1000.0,
+            step=1.0,
+            description='emitZ:',
+            disabled=False,
+            continuous_update=False,
+        )
+
+        label_layout = widgets.Layout(width='100%')
+        twissXLabel = widgets.Label(value = "Horizontal Twiss", layout = label_layout)
+        twissYLabel = widgets.Label(value = "Vertical Twiss", layout = label_layout)
+        twissZLabel = widgets.Label(value = "Longitudinal Twiss", layout = label_layout)
+
+        energyOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        xOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        xpOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        yOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        ypOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        phaseOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+
+        energyOffsetLabel = widgets.Label(value = "Energy Offset (MeV):", layout = label_layout)
+        xOffsetLabel = widgets.Label(value = "x Offset (cm):", layout = label_layout)
+        xpOffsetLabel = widgets.Label(value = "xp Offset (mrad):", layout = label_layout)
+        yOffsetLabel = widgets.Label(value = "y Offset (cm):", layout = label_layout)
+        ypOffsetLabel = widgets.Label(value = "yp Offset (mrad):", layout = label_layout)
+        phaseOffsetLabel = widgets.Label(value = "Phase Offset (s):", layout = label_layout)
+
+        beamFreq = widgets.IntText(value = 352.21e6, display='flex', flex_basis='20%')
+        bunchPopulation = widgets.IntText(value = 1000, display='flex', flex_basis='20%')
+
+        beamFreqLabel = widgets.Label(value = "Beam Freq (Hz):", layout = label_layout)
+        bunchPopulationLabel = widgets.Label(value = "Bunch pop.:", layout = label_layout)
+
+        restMass = widgets.FloatText(value = 938.27231, display='flex', flex_basis='20%')
+        atomicNum = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
+        charge = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
+
+        restMassLabel = widgets.Label(value = "Rest mass (MeV/c^2):", layout = label_layout)
+        atomicNumLabel = widgets.Label(value = "Atomic Number):", layout = label_layout)
+        chargeLabel = widgets.Label(value = "Particle Charge:", layout = label_layout)
+
+        def getPynacInput():
+            beam = ['GEBEAM', [
+                [4, 1],
+                [beamFreq.value, bunchPopulation.value],
+                [energyOffset.value, xOffset.value, xpOffset.value, yOffset.value, ypOffset.value, phaseOffset.value],
+                [alphaX.value, betaX.value, emitX.value],
+                [alphaY.value, betaY.value, emitY.value],
+                [alphaZ.value, betaZ.value, emitZ.value],
+            ]]
+            return beam
+
+        def getDynacInput():
+            beam = 'GEBEAM\r\n'
+            beam += '4 1\r\n'
+            beam += '%e %d\r\n' % (beamFreq.value, bunchPopulation.value)
+            beam += '%f %f %f %f %f %f\r\n' % (energyOffset.value, xOffset.value, xpOffset.value, yOffset.value, ypOffset.value, phaseOffset.value)
+            beam += '%f %f %f\r\n' % (alphaX.value, betaX.value, emitX.value)
+            beam += '%f %f %f\r\n' % (alphaY.value, betaY.value, emitY.value)
+            beam += '%f %f %f' % (alphaZ.value, betaZ.value, emitZ.value)
+            return beam
+
+        cssHeightStr = '170px'
+        viewBtn = widgets.Button(description="View Pynac Input")
+        pynacViewArea = widgets.Textarea()
+        pynacViewArea.layout.height = cssHeightStr
+        dynacViewArea = widgets.Textarea()
+        dynacViewArea.layout.height = cssHeightStr
+
+        pynacViewArea.value = getPynacInput().__str__()
+        dynacViewArea.value = getDynacInput()
+
+        self.lattice = []
+        self.lattice.append(getPynacInput())
+        self.lattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
+        self.lattice.append(['REFCOG', [[0]]])
+        self.lattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
+        self.lattice.append(['STOP', []])
+
+        test = Pynac.from_lattice("Zero-length lattice for beam generation", self.lattice)
+        test.run()
+
+        with open('emit.plot') as f:
+            for i in range(204):
+                f.readline()
+            numParts = int(f.readline())
+            x, xp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                x.append(float(dat[0]))
+                xp.append(float(dat[1]))
+            f.readline()
+            for i in range(202):
+                f.readline()
+            y, yp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                y.append(float(dat[0]))
+                yp.append(float(dat[1]))
+            f.readline()
+            for i in range(203):
+                f.readline()
+            z, zp = [], []
+            for i in range(numParts):
+                dat = f.readline().split()
+                z.append(float(dat[0]))
+                zp.append(float(dat[1]))
+
+        dataSource = ColumnDataSource(data=dict(x=x, xp=xp, y=y, yp=yp, z=z, zp=zp))
+
+        p0 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
+        p0.xaxis.axis_label = 'Horizontal position'
+        p0.yaxis.axis_label = 'Horizontal angle'
+        p0.circle('x', 'xp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource)
+
+        p1 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
+        p1.xaxis.axis_label = 'Vertical position'
+        p1.yaxis.axis_label = 'Vertical angle'
+        p1.circle('y', 'yp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+
+        p2 = figure(plot_height=250, plot_width=296, y_range=(-0.1, 0.1), x_range=(-150, 150))
+        p2.xaxis.axis_label = 'Longitudinal phase'
+        p2.yaxis.axis_label = 'Longitudinal energy'
+        p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+
+        grid = gridplot([[p0, p1, p2]])
+        show(grid, notebook_handle=True)
+        push_notebook()
+
+        def on_button_clicked(b):
+            pynacViewArea.value = getPynacInput().__str__()
+            dynacViewArea.value = getDynacInput()
+            self.lattice[0] = getPynacInput()
+            self.lattice[0][1][1][1] = 1000
+            test = Pynac.from_lattice("Zero-length lattice for beam generation", self.lattice)
+            test.run()
+            with open('emit.plot') as f:
+                for i in range(204):
+                    f.readline()
+                numParts = int(f.readline())
+                x, xp = [], []
+                for i in range(numParts):
+                    dat = f.readline().split()
+                    x.append(float(dat[0]))
+                    xp.append(float(dat[1]))
+                f.readline()
+                for i in range(202):
+                    f.readline()
+                y, yp = [], []
+                for i in range(numParts):
+                    dat = f.readline().split()
+                    y.append(float(dat[0]))
+                    yp.append(float(dat[1]))
+                f.readline()
+                for i in range(203):
+                    f.readline()
+                z, zp = [], []
+                for i in range(numParts):
+                    dat = f.readline().split()
+                    z.append(float(dat[0]))
+                    zp.append(float(dat[1]))
+            dataSource.data['x'] = x
+            dataSource.data['xp'] = xp
+            dataSource.data['y'] = y
+            dataSource.data['yp'] = yp
+            dataSource.data['z'] = z
+            dataSource.data['zp'] = zp
+            push_notebook()
+
+        activeWidgetList = [betaX, alphaX, emitX, betaY, alphaY, emitY, betaZ, alphaZ, emitZ,
+            energyOffset, xOffset, xpOffset, yOffset, ypOffset, phaseOffset,
+            beamFreq, bunchPopulation, restMass, atomicNum, charge
+        ]
+        for slider in activeWidgetList:
+            slider.observe(on_button_clicked)
+
+        pynacBoxLabel = widgets.Label(value = "Pynac Input", layout = label_layout)
+        dynacBoxLabel = widgets.Label(value = "Dynac Input", layout = label_layout)
+
+        twissControls = HBox([
+                VBox([twissXLabel, betaX, alphaX, emitX]),
+                VBox([twissYLabel, betaY, alphaY, emitY]),
+                VBox([twissZLabel, betaZ, alphaZ, emitZ]),
+            ])
+        colLayout = Layout(display='flex', flex_flow='column', align_items='stretch')
+        otherControls = Box([
+                Box([restMassLabel, atomicNumLabel, chargeLabel, beamFreqLabel, bunchPopulationLabel], layout=colLayout),
+                Box([restMass, atomicNum, charge, beamFreq, bunchPopulation], layout=colLayout),
+                Box([energyOffsetLabel, xOffsetLabel, xpOffsetLabel, yOffsetLabel, ypOffsetLabel, phaseOffsetLabel], layout=colLayout),
+                Box([energyOffset, xOffset, xpOffset, yOffset, ypOffset, phaseOffset], layout=colLayout),
+            ], layout=Layout(
+                    display='flex',
+                    flex_flow='row',
+                    align_items='stretch',
+                    width='100%'
+        ))
+
+        inputText = HBox([
+                VBox([pynacBoxLabel, pynacViewArea]),
+                VBox([dynacBoxLabel, dynacViewArea])
+            ])
+
+        accordion = widgets.Accordion(children = [twissControls, otherControls, inputText])
+        accordion.set_title(0, 'Twiss (to alter the phase-space plots)')
+        accordion.set_title(1, 'Beam details (will not alter the phase-space plots)')
+        accordion.set_title(2, 'Pynac/Dynac input')
+        display(accordion)
+
 class PhaseSpace:
     '''
     A representation of the phase space of the simulated bunch read from the
@@ -350,240 +582,54 @@ def EleFromPynac(pynacRepr):
         obj = pynacRepr
     return obj
 
-def buildABeam():
-    betaX = widgets.FloatSlider(
-        value=7.5,
-        min=0.01,
-        max=20.0,
-        step=0.01,
-        description='betaX:',
-        disabled=False,
-        continuous_update=False,
-    )
+    def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
+        '''
+        Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
+        number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
+        and ``pynacInSubDirectory``.
+        '''
+        with ProcessPoolExecutor(max_workers = max_workers) as executor:
+            tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
+        exc = [task.exception() for task in tasks if task.exception()]
+        if exc:
+            return exc
+        else:
+            return "No errors encountered"
 
-    alphaX = widgets.FloatSlider(
-        value=0.0,
-        min=-5.0,
-        max=5.0,
-        step=0.01,
-        description='alphaX:',
-        disabled=False,
-        continuous_update=False,
-    )
+    def doSingleDynacProcess(num, filelist, pynacFunc):
+        '''
+        Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
+        docstring for that context manager to understand the meaning of the ``num`` and
+        ``filelist`` inputs.
 
-    emitX = widgets.FloatSlider(
-        value=0.5,
-        min=0.01,
-        max=10.0,
-        step=0.01,
-        description='emitX:',
-        disabled=False,
-        continuous_update=False,
-    )
+        The primary purpose of this function is to enable multiprocess use of Pynac via
+        the ``multiProcessPynac`` function.
+        '''
+        with pynacInSubDirectory(num, filelist):
+            pynacFunc()
 
-    betaY = widgets.FloatSlider(
-        value=7.5,
-        min=0.01,
-        max=20.0,
-        step=0.01,
-        description='betaY:',
-        disabled=False,
-        continuous_update=False,
-    )
+    @contextmanager
+    def pynacInSubDirectory(num, filelist):
+        '''
+        A context manager to create a new directory, move the files listed in ``filelist``
+        to that directory, and change to that directory before handing control back to
+        context.  The closing action is to change back to the original directory.
 
-    alphaY = widgets.FloatSlider(
-        value=0.0,
-        min=-5.0,
-        max=5.0,
-        step=0.01,
-        description='alphaY:',
-        disabled=False,
-        continuous_update=False,
-    )
+        The directory name is based on the ``num`` input, and if it already exists, it
+        will be deleted upon entering the context.
 
-    emitY = widgets.FloatSlider(
-        value=0.5,
-        min=0.01,
-        max=10.0,
-        step=0.01,
-        description='emitY:',
-        disabled=False,
-        continuous_update=False,
-    )
+        The primary purpose of this function is to enable multiprocess use of Pynac via
+        the ``multiProcessPynac`` function.
+        '''
+        print('Running %d' % num)
+        newDir = 'dynacProc_%04d' % num
+        if os.path.isdir(newDir):
+            shutil.rmtree(newDir)
+        os.mkdir(newDir)
+        for f in filelist:
+            shutil.copy(f, newDir)
+        os.chdir(newDir)
 
-    betaZ = widgets.FloatSlider(
-        value=7.5,
-        min=0.01,
-        max=20.0,
-        step=0.01,
-        description='betaZ:',
-        disabled=False,
-        continuous_update=False,
-    )
+        yield
 
-    alphaZ = widgets.FloatSlider(
-        value=0.0,
-        min=-5.0,
-        max=5.0,
-        step=0.01,
-        description='alphaZ:',
-        disabled=False,
-        continuous_update=False,
-    )
-
-    emitZ = widgets.FloatSlider(
-        value=500,
-        min=1.0,
-        max=1000.0,
-        step=1.0,
-        description='emitZ:',
-        disabled=False,
-        continuous_update=False,
-    )
-
-    def getPynacInput():
-        beam = ['GEBEAM', [
-            [4, 1],
-            [352.21e6, 1000],
-            [0, 0, 0, 0, 0, 0],
-            [alphaX.value, betaX.value, emitX.value],
-            [alphaY.value, betaY.value, emitY.value],
-            [alphaZ.value, betaZ.value, emitZ.value],
-        ]]
-        return beam
-
-    def getDynacInput():
-        beam = 'GEBEAM\r\n'
-        beam += '4 1\r\n'
-        beam += '352.21e6 1000\r\n'
-        beam += '0 0 0 0 0 0\r\n'
-        beam += '%f %f %f\r\n' % (alphaX.value, betaX.value, emitX.value)
-        beam += '%f %f %f\r\n' % (alphaY.value, betaY.value, emitY.value)
-        beam += '%f %f %f' % (alphaZ.value, betaZ.value, emitZ.value)
-        return beam
-
-    cssHeightStr = '150px'
-    viewBtn = widgets.Button(description="View Pynac Input")
-    pynacViewArea = widgets.Textarea()
-    pynacViewArea.layout.height = cssHeightStr
-    dynacViewArea = widgets.Textarea()
-    dynacViewArea.layout.height = cssHeightStr
-
-    pynacViewArea.value = getPynacInput().__str__()
-    dynacViewArea.value = getDynacInput()
-
-    lattice = []
-    lattice.append(getPynacInput())
-    lattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
-    lattice.append(['REFCOG', [[0]]])
-    lattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
-    lattice.append(['STOP', []])
-
-    test = Pynac.from_lattice("Zero-length lattice for beam generation", lattice)
-    test.run()
-
-    with open('emit.plot') as f:
-        for i in range(204):
-            f.readline()
-        numParts = int(f.readline())
-        x, xp = [], []
-        for i in range(numParts):
-            dat = f.readline().split()
-            x.append(float(dat[0]))
-            xp.append(float(dat[1]))
-        f.readline()
-        for i in range(202):
-            f.readline()
-        y, yp = [], []
-        for i in range(numParts):
-            dat = f.readline().split()
-            y.append(float(dat[0]))
-            yp.append(float(dat[1]))
-        f.readline()
-        for i in range(203):
-            f.readline()
-        z, zp = [], []
-        for i in range(numParts):
-            dat = f.readline().split()
-            z.append(float(dat[0]))
-            zp.append(float(dat[1]))
-
-    dataSource = ColumnDataSource(data=dict(x=x, xp=xp, y=y, yp=yp, z=z, zp=zp))
-
-    p0 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
-    p0.xaxis.axis_label = 'Horizontal position'
-    p0.yaxis.axis_label = 'Horizontal angle'
-    p0.circle('x', 'xp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource)
-
-    p1 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
-    p1.xaxis.axis_label = 'Vertical position'
-    p1.yaxis.axis_label = 'Vertical angle'
-    p1.circle('y', 'yp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
-
-    p2 = figure(plot_height=250, plot_width=296, y_range=(-0.1, 0.1), x_range=(-150, 150))
-    p2.xaxis.axis_label = 'Longitudinal phase'
-    p2.yaxis.axis_label = 'Longitudinal energy'
-    p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
-
-    grid = gridplot([[p0, p1, p2]])
-    show(grid, notebook_handle=True)
-    push_notebook()
-
-    def on_button_clicked(b):
-        pynacViewArea.value = getPynacInput().__str__()
-        dynacViewArea.value = getDynacInput()
-        lattice[0] = getPynacInput()
-        test = Pynac.from_lattice("Zero-length lattice for beam generation", lattice)
-        test.run()
-        with open('emit.plot') as f:
-            for i in range(204):
-                f.readline()
-            numParts = int(f.readline())
-            x, xp = [], []
-            for i in range(numParts):
-                dat = f.readline().split()
-                x.append(float(dat[0]))
-                xp.append(float(dat[1]))
-            f.readline()
-            for i in range(202):
-                f.readline()
-            y, yp = [], []
-            for i in range(numParts):
-                dat = f.readline().split()
-                y.append(float(dat[0]))
-                yp.append(float(dat[1]))
-            f.readline()
-            for i in range(203):
-                f.readline()
-            z, zp = [], []
-            for i in range(numParts):
-                dat = f.readline().split()
-                z.append(float(dat[0]))
-                zp.append(float(dat[1]))
-        dataSource.data['x'] = x
-        dataSource.data['xp'] = xp
-        dataSource.data['y'] = y
-        dataSource.data['yp'] = yp
-        dataSource.data['z'] = z
-        dataSource.data['zp'] = zp
-        push_notebook()
-
-    label_layout = widgets.Layout(width='100%')
-    twissXLabel = widgets.Label(value = "Horizontal Twiss", layout = label_layout)
-    twissYLabel = widgets.Label(value = "Vertical Twiss", layout = label_layout)
-    twissZLabel = widgets.Label(value = "Longitudinal Twiss", layout = label_layout)
-
-    for slider in [betaX, alphaX, emitX, betaY, alphaY, emitY, betaZ, alphaZ, emitZ]:
-        slider.observe(on_button_clicked)
-
-    pynacBoxLabel = widgets.Label(value = "Pynac Input", layout = label_layout)
-    dynacBoxLabel = widgets.Label(value = "Dynac Input", layout = label_layout)
-
-    controls = VBox([
-        HBox([
-            VBox([twissXLabel, betaX, alphaX, emitX, pynacBoxLabel, pynacViewArea]),
-            VBox([twissYLabel, betaY, alphaY, emitY, dynacBoxLabel, dynacViewArea]),
-            VBox([twissZLabel, betaZ, alphaZ, emitZ]),
-        ]),
-    ])
-    display(controls)
+        os.chdir('..')

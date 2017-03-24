@@ -2,6 +2,16 @@ from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
 
+class NewPynPlot:
+    '''
+    A new class implementing the PynPlt functionality
+    '''
+
+    def __init__(self):
+        with open('emit.plot') as emitPlotFile:
+            plotTypeNum = int(emitPlotFile.readline().strip())
+
+
 class PynPlt(object):
     '''
     The main entry point for production of Dynac-style plots.
@@ -279,3 +289,16 @@ class PynPlt(object):
         grid = gridplot([p0,p1],[p2,p3])
 
         show(grid)
+
+def parseEmitPlot():
+    plotType = {
+        1: 'EMITGR',
+        2: 'PROFGR',
+        3: 'ENVEL'
+    }
+
+    with open('emit.plot') as emitPlotFile:
+        plotTypeNum = int(emitPlotFile.readline().strip())
+
+        if plotType[plotTypeNum] == 'EMITGR':
+            

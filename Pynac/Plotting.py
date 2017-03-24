@@ -1,6 +1,7 @@
 from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
+from bokeh.models import ColumnDataSource
 
 class NewPynPlot:
     '''
@@ -292,23 +293,47 @@ class PynPlt(object):
 
 def parseEmitPlot():
     plotTypeDefs = {
-        1: 'EMITGR',
-        2: 'PROFGR',
-        3: 'ENVEL'
+        1: parseEMITGRdata,
+        2: parsePROFGRdata,
+        3: parseENVELdata
     }
 
     with open('emit.plot') as emitPlotFile:
         plotTypeNum = int(emitPlotFile.readline().strip())
-        plotType = plotTypeDefs[plotTypeNum]
-
-        if plotType == 'EMITGR':
-            parseEMITGRdata(emitPlotFile)
-        elif plotType == 'PROFGR':
-            parseEMITGRdata(emitPlotFile)
-        elif plotType == 'ENVEL':
-            parseEMITGRdata(emitPlotFile)
-        else:
-            raise RuntimeError('Unknown plot type in emit.plot')
+        plotFunc = plotTypeDefs[plotTypeNum]
+        plotFunc()
 
 def parseEMITGRdata(fileObj):
+    output = {}
+    plotTitle = fileObj.readline().strip()
+    output['axisLimsX'] = [float(i) for i in fileObj.readline().strip().split()]
+    output['horizEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'x', 'xp'))
+
+    numParts = int(fileObj.readline().strip())
+    xBeamDict = _getPairDataFromFile(fileObj, 'x', 'xp', numParts)
+
+    output['axisLimsY'] = [float(i) for i in fileObj.readline().strip().split()]
+    output['vertEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'y', 'yp'))
+
+    numParts = int(fileObj.readline().strip())
+    yBeamDict = _getPairDataFromFile(fileObj, 'y', 'yp', numParts)
+
+    # Skip a couple of lines
+    fileObj.readline()
+    fileObj.readline()
+
+    return output
+
+def parsePROFGRdata(fileObj):
     pass
+
+def parseENVELdata(fileObj):
+    pass
+
+def _getPairDataFromFile(fileObj, x1, x2, numLines=201):
+    dataDict = {x1: [], x2: []}
+    for _ in range(numLines):
+        datum = [float(i) for i in fileObj.readline().strip().split()]
+        dataDict[x1].append(datum[0])
+        dataDict[x2].append(datum[1])
+    return dataDict

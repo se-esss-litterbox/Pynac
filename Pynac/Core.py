@@ -18,6 +18,7 @@ from bokeh.layouts import gridplot
 from bokeh.io import show, push_notebook
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
+import Pynac.Plotting as pynplt
 
 class Pynac(object):
     '''
@@ -210,7 +211,9 @@ class Pynac(object):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
 
 class Builder:
-    def buildABeamTool(self):
+    inputBeamLattice = None
+
+    def buildABeam(self):
         betaX = widgets.FloatSlider(
             value=7.5,
             min=0.01,
@@ -298,12 +301,12 @@ class Builder:
         twissYLabel = widgets.Label(value = "Vertical Twiss", layout = label_layout)
         twissZLabel = widgets.Label(value = "Longitudinal Twiss", layout = label_layout)
 
-        energyOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
-        xOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
-        xpOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
-        yOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
-        ypOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
-        phaseOffset = widgets.FloatText(value = 0.0, display='flex', flex_basis='20%')
+        energyOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        xOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        xpOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        yOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        ypOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        phaseOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
 
         energyOffsetLabel = widgets.Label(value = "Energy Offset (MeV):", layout = label_layout)
         xOffsetLabel = widgets.Label(value = "x Offset (cm):", layout = label_layout)
@@ -314,6 +317,7 @@ class Builder:
 
         beamFreq = widgets.IntText(value = 352.21e6, display='flex', flex_basis='20%')
         bunchPopulation = widgets.IntText(value = 1000, display='flex', flex_basis='20%')
+        self.bunchPopulation = bunchPopulation
 
         beamFreqLabel = widgets.Label(value = "Beam Freq (Hz):", layout = label_layout)
         bunchPopulationLabel = widgets.Label(value = "Bunch pop.:", layout = label_layout)
@@ -323,7 +327,7 @@ class Builder:
         charge = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
 
         restMassLabel = widgets.Label(value = "Rest mass (MeV/c^2):", layout = label_layout)
-        atomicNumLabel = widgets.Label(value = "Atomic Number):", layout = label_layout)
+        atomicNumLabel = widgets.Label(value = "Atomic Number:", layout = label_layout)
         chargeLabel = widgets.Label(value = "Particle Charge:", layout = label_layout)
 
         def getPynacInput():
@@ -357,14 +361,14 @@ class Builder:
         pynacViewArea.value = getPynacInput().__str__()
         dynacViewArea.value = getDynacInput()
 
-        self.lattice = []
-        self.lattice.append(getPynacInput())
-        self.lattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
-        self.lattice.append(['REFCOG', [[0]]])
-        self.lattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
-        self.lattice.append(['STOP', []])
+        self.inputBeamLattice = []
+        self.inputBeamLattice.append(getPynacInput())
+        self.inputBeamLattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
+        self.inputBeamLattice.append(['REFCOG', [[0]]])
+        self.inputBeamLattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
+        self.inputBeamLattice.append(['STOP', []])
 
-        test = Pynac.from_lattice("Zero-length lattice for beam generation", self.lattice)
+        test = Pynac.from_lattice("Zero-length lattice for beam generation", self.inputBeamLattice)
         test.run()
 
         with open('emit.plot') as f:
@@ -417,9 +421,9 @@ class Builder:
         def on_button_clicked(b):
             pynacViewArea.value = getPynacInput().__str__()
             dynacViewArea.value = getDynacInput()
-            self.lattice[0] = getPynacInput()
-            self.lattice[0][1][1][1] = 1000
-            test = Pynac.from_lattice("Zero-length lattice for beam generation", self.lattice)
+            self.inputBeamLattice[0] = getPynacInput()
+            self.inputBeamLattice[0][1][1][1] = 1000
+            test = Pynac.from_lattice("Zero-length lattice for beam generation", self.inputBeamLattice)
             test.run()
             with open('emit.plot') as f:
                 for i in range(204):
@@ -490,8 +494,60 @@ class Builder:
         accordion = widgets.Accordion(children = [twissControls, otherControls, inputText])
         accordion.set_title(0, 'Twiss (to alter the phase-space plots)')
         accordion.set_title(1, 'Beam details (will not alter the phase-space plots)')
-        accordion.set_title(2, 'Pynac/Dynac input')
+        accordion.set_title(2, "Pynac/Dynac input (to copy'n'paste into your own files)")
         display(accordion)
+
+    def runSimulation(self):
+        self.sim = None
+
+        loadLatticeBtn = widgets.Button(
+            description="Load lattice file",
+            button_style='success',
+            disabled=False,
+        )
+        addBuiltBeam = widgets.Button(
+            description="Add new beam",
+            button_style='',
+            disabled=True,
+        )
+        self.addBuiltBeam = addBuiltBeam
+        runSimBtn = widgets.Button(
+            description="Run simulation",
+            button_style='',
+            disabled=True,
+        )
+        plotBtn = widgets.Button(
+            description="Plot!",
+            button_style='',
+            disabled=True,
+        )
+        plotitBtn = widgets.Button(
+            description="Dynac-style plotit",
+            button_style='',
+            disabled=True,
+        )
+
+        buttons = HBox([loadLatticeBtn, addBuiltBeam, runSimBtn, plotitBtn])
+        display(buttons)
+
+        def loadLattice_click(b):
+            self.sim = Pynac('ESS_with_SC_ana.in')
+            if self.inputBeamLattice:
+                addBuiltBeam.disabled = False
+                addBuiltBeam.button_style = 'warning'
+            runSimBtn.disabled = False
+            runSimBtn.button_style = 'danger'
+        loadLatticeBtn.on_click(loadLattice_click)
+
+        def runSim_click(b):
+            self.sim.run()
+            plotitBtn.disabled = False
+            plotitBtn.button_style = 'warning'
+        runSimBtn.on_click(runSim_click)
+
+        def plotitBtn_click(b):
+            pynplt.PynPlt().plotit()
+        plotitBtn.on_click(plotitBtn_click)
 
 class PhaseSpace:
     '''

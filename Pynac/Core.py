@@ -15,7 +15,7 @@ from ipywidgets import HBox, VBox, Layout, Box
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot
-from bokeh.io import show, push_notebook
+from bokeh.io import show, push_notebook, curdoc, curstate
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
 import Pynac.Plotting as pynplt
@@ -415,8 +415,9 @@ class Builder:
         p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
 
         grid = gridplot([[p0, p1, p2]])
-        show(grid, notebook_handle=True)
-        push_notebook()
+        self.beamBuilderPlotHandle = show(grid, notebook_handle=True)
+        self.beamBuilderPlotDoc = curdoc()
+        push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
 
         def on_button_clicked(b):
             pynacViewArea.value = getPynacInput().__str__()
@@ -456,7 +457,7 @@ class Builder:
             dataSource.data['yp'] = yp
             dataSource.data['z'] = z
             dataSource.data['zp'] = zp
-            push_notebook()
+            push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
 
         activeWidgetList = [betaX, alphaX, emitX, betaY, alphaY, emitY, betaZ, alphaZ, emitZ,
             energyOffset, xOffset, xpOffset, yOffset, ypOffset, phaseOffset,
@@ -538,6 +539,17 @@ class Builder:
             runSimBtn.disabled = False
             runSimBtn.button_style = 'danger'
         loadLatticeBtn.on_click(loadLattice_click)
+
+        def addBuiltBeam_click(b):
+            beamInds = self.sim.getXinds('RDBEAM')
+            beamInds += self.sim.getXinds('REFCOG')
+            beamInds += self.sim.getXinds('INPUT')
+            beamInds += self.sim.getXinds('GEBEAM')
+            beamInds = sorted(beamInds, reverse=True)
+            for ele in beamInds:
+                del self.sim.lattice[ele]
+            self.sim.lattice = self.inputBeamLattice[:3] + self.sim.lattice
+        addBuiltBeam.on_click(addBuiltBeam_click)
 
         def runSim_click(b):
             self.sim.run()

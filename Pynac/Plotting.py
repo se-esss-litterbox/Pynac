@@ -291,7 +291,7 @@ class PynPlt(object):
         show(grid)
 
 def parseEmitPlot():
-    plotType = {
+    plotTypeDefs = {
         1: 'EMITGR',
         2: 'PROFGR',
         3: 'ENVEL'
@@ -299,6 +299,16 @@ def parseEmitPlot():
 
     with open('emit.plot') as emitPlotFile:
         plotTypeNum = int(emitPlotFile.readline().strip())
+        plotType = plotTypeDefs[plotTypeNum]
 
-        if plotType[plotTypeNum] == 'EMITGR':
-            
+        if plotType == 'EMITGR':
+            parseEMITGRdata(emitPlotFile)
+        elif plotType == 'PROFGR':
+            parseEMITGRdata(emitPlotFile)
+        elif plotType == 'ENVEL':
+            parseEMITGRdata(emitPlotFile)
+        else:
+            raise RuntimeError('Unknown plot type in emit.plot')
+
+def parseEMITGRdata(fileObj):
+    pass

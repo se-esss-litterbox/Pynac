@@ -1,6 +1,7 @@
 from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
+from bokeh.models.sources import ColumnDataSource
 
 class PynPlt(object):
     '''
@@ -280,123 +281,193 @@ class PynPlt(object):
 
         show(grid)
 
-def parseEmitPlot(filename = 'emit.plot'):
-    plotTypeDefs = {
-        1: _parseEMITGRdata,
-        2: _parsePROFGRdata,
-        3: _parseENVELdata
-    }
+class NewPynPlt:
+    def __init__(self, filename='emit.plot'):
+        self.filename = filename
 
-    plotData = {1: [], 2: [], 3: []}
+        parsedData = self.parseEmitPlot()
 
-    with open(filename) as emitPlotFile:
-        while True:
-            try:
-                plotTypeNum = int(emitPlotFile.readline().strip())
-            except ValueError: # EOF
-                break
-            plotFunc = plotTypeDefs[plotTypeNum]
-            plotData[plotTypeNum].append(plotFunc(emitPlotFile))
+        self.emitgrColumnData = []
+        for plotData in parsedData[1]:
+            hEllipseData = plotData['horizEllipse']
+            vEllipseData = plotData['vertEllipse']
+            lEllipseData = plotData['longEllipse']
+            beamData = plotData['beamDict']
+            self.emitgrColumnData.append({
+                'horizEllipse': ColumnDataSource(data=dict(
+                    x = hEllipseData['x'],
+                    xp = hEllipseData['xp']
+                )),
+                'vertEllipse': ColumnDataSource(data=dict(
+                    y = vEllipseData['y'],
+                    yp = vEllipseData['yp']
+                )),
+                'longEllipse': ColumnDataSource(data=dict(
+                    z = lEllipseData['z'],
+                    zp = lEllipseData['zp']
+                )),
+                'beam': ColumnDataSource(data=dict(
+                    x = beamData['x'],
+                    xp = beamData['xp'],
+                    y = beamData['y'],
+                    yp = beamData['yp'],
+                    z = beamData['z'],
+                    zp = beamData['zp'],
+                ))
+            })
 
-    return plotData
+        self.profgrColumnData = []
+        for plotData in parsedData[2]:
+            normedProfs = plotData['normedProfiles']
+            self.profgrColumnData.append({
+                'beam': ColumnDataSource(data=dict(
+                    x = plotData['beamDict']['x'],
+                    y = plotData['beamDict']['y'],
+                    z = plotData['beamDict']['z'],
+                )),
+                'normedProfX': ColumnDataSource(data=dict(
+                    x = normedProfs['x'],
+                    xval = normedProfs['xval'],
+                )),
+                'normedProfY': ColumnDataSource(data=dict(
+                    x = normedProfs['y'],
+                    xval = normedProfs['yval'],
+                )),
+                'normedProfZ': ColumnDataSource(data=dict(
+                    x = normedProfs['z'],
+                    xval = normedProfs['zval'],
+                )),
+                'normedProfXP': ColumnDataSource(data=dict(
+                    x = normedProfs['xp'],
+                    xval = normedProfs['xpval'],
+                )),
+                'normedProfYP': ColumnDataSource(data=dict(
+                    x = normedProfs['yp'],
+                    xval = normedProfs['ypval'],
+                )),
+                'normedProfZP': ColumnDataSource(data=dict(
+                    x = normedProfs['zp'],
+                    xval = normedProfs['zpval'],
+                )),
+            })
 
-def _parseEMITGRdata(fileObj):
-    output = {}
-    output['plotTitle'] = fileObj.readline().strip()
-    output['axisLimsX'] = [float(i) for i in fileObj.readline().strip().split()]
-    output['horizEllipse'] = _getPairDataFromFile(fileObj, 'x', 'xp')
+        self.envelColumnData = []
+        for plotData in parsedData[3]:
+            pass
 
-    numParts = int(fileObj.readline().strip())
-    xBeamDict = _getPairDataFromFile(fileObj, 'x', 'xp', numParts)
+    def parseEmitPlot(self):
+        plotTypeDefs = {
+            1: self._parseEMITGRdata,
+            2: self._parsePROFGRdata,
+            3: self._parseENVELdata
+        }
 
-    output['axisLimsY'] = [float(i) for i in fileObj.readline().strip().split()]
-    output['vertEllipse'] = _getPairDataFromFile(fileObj, 'y', 'yp')
+        plotData = {1: [], 2: [], 3: []}
 
-    numParts = int(fileObj.readline().strip())
-    yBeamDict = _getPairDataFromFile(fileObj, 'y', 'yp', numParts)
+        with open(self.filename) as self.emitPlotFile:
+            while True:
+                try:
+                    plotTypeNum = int(self.emitPlotFile.readline().strip())
+                except ValueError: # EOF
+                    break
+                plotFunc = plotTypeDefs[plotTypeNum]
+                plotData[plotTypeNum].append(plotFunc())
 
-    # Skip a line
-    fileObj.readline()
-    output['axisLimsZ'] = [float(i) for i in fileObj.readline().strip().split()]
+        return plotData
 
-    output['longEllipse'] = _getPairDataFromFile(fileObj, 'z', 'zp')
+    def _parseEMITGRdata(self):
+        output = {}
+        output['beamDict'] = dict()
 
-    numParts = int(fileObj.readline().strip())
-    zBeamDict = _getPairDataFromFile(fileObj, 'z', 'zp', numParts)
+        output['plotTitle'] = self.emitPlotFile.readline().strip()
+        output['axisLimsX'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        output['horizEllipse'] = self._getPairDataFromFile('x', 'xp')
 
-    beamDict = dict()
-    beamDict.update(xBeamDict)
-    beamDict.update(yBeamDict)
-    beamDict.update(zBeamDict)
-    output['beamDict'] = beamDict
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('x', 'xp', numParts))
 
-    return output
+        output['axisLimsY'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        output['vertEllipse'] = self._getPairDataFromFile('y', 'yp')
 
-def _parsePROFGRdata(fileObj):
-    output = {}
-    output['plotTitle'] = fileObj.readline().strip()
-    output['axisLimsX'] = [float(i) for i in fileObj.readline().strip().split()]
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('y', 'yp', numParts))
 
-    output['beamDict'] = dict()
+        # Skip a line
+        self.emitPlotFile.readline()
+        output['axisLimsZ'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
 
-    numParts = int(fileObj.readline().strip())
-    output['beamDict'].update(_getPairDataFromFile(fileObj, 'z', 'x', numParts))
+        output['longEllipse'] = self._getPairDataFromFile('z', 'zp')
 
-    output['axisLimsY'] = [float(i) for i in fileObj.readline().strip().split()]
-    numParts = int(fileObj.readline().strip())
-    output['beamDict'].update(_getPairDataFromFile(fileObj, 'z', 'y', numParts))
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'zp', numParts))
 
-    output['normedProfiles'] = dict()
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'x', 'val', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'y', 'val', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'z', 'val', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'xp', 'val', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'yp', 'val', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'zp', 'val', numPoints))
+        return output
 
-    return output
+    def _parsePROFGRdata(self):
+        output = {}
+        output['plotTitle'] = self.emitPlotFile.readline().strip()
+        output['axisLimsX'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
 
-def _parseENVELdata(fileObj):
-    output = {}
-    output['plotTitleTrans'] = fileObj.readline().strip()
-    output['axisLimsTrans'] = [float(i) for i in fileObj.readline().strip().split()]
+        output['beamDict'] = dict()
 
-    output['envelopes'] = dict()
-    numPoints = int(fileObj.readline().strip())
-    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'x', numPoints))
-    numPoints = int(fileObj.readline().strip())
-    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'y', numPoints))
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'x', numParts))
 
-    # Skip a line
-    fileObj.readline()
+        output['axisLimsY'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'y', numParts))
 
-    output['plotTitleEnergy'] = fileObj.readline().strip()
-    output['axisLimsEnergy'] = [float(i) for i in fileObj.readline().strip().split()]
+        output['normedProfiles'] = dict()
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('x', 'xval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('y', 'yval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('z', 'zval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('xp', 'xpval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('yp', 'ypval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('zp', 'zpval', numPoints))
 
-    numPoints = int(fileObj.readline().strip())
-    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'dW/W', numPoints))
+        return output
 
-    # Skip a line
-    fileObj.readline()
+    def _parseENVELdata(self):
+        output = {}
+        output['plotTitleTrans'] = self.emitPlotFile.readline().strip()
+        output['axisLimsTrans'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
 
-    output['plotTitlePhase'] = fileObj.readline().strip()
-    output['axisLimsPhase'] = [float(i) for i in fileObj.readline().strip().split()]
+        output['envelopes'] = dict()
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'x', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'y', numPoints))
 
-    numPoints = int(fileObj.readline().strip())
-    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'phi', numPoints))
+        # Skip a line
+        self.emitPlotFile.readline()
 
-    return output
+        output['plotTitleEnergy'] = self.emitPlotFile.readline().strip()
+        output['axisLimsEnergy'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
 
-def _getPairDataFromFile(fileObj, x1, x2, numLines=201):
-    dataDict = {x1: [], x2: []}
-    for _ in range(numLines):
-        datum = [float(i) for i in fileObj.readline().strip().split()]
-        dataDict[x1].append(datum[0])
-        dataDict[x2].append(datum[1])
-    return dataDict
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'dW/W', numPoints))
+
+        # Skip a line
+        self.emitPlotFile.readline()
+
+        output['plotTitlePhase'] = self.emitPlotFile.readline().strip()
+        output['axisLimsPhase'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'phi', numPoints))
+
+        return output
+
+    def _getPairDataFromFile(self, x1, x2, numLines=201):
+        dataDict = {x1: [], x2: []}
+        for _ in range(numLines):
+            datum = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+            dataDict[x1].append(datum[0])
+            dataDict[x2].append(datum[1])
+        return dataDict

@@ -322,6 +322,8 @@ def parseEMITGRdata(fileObj):
     fileObj.readline()
     fileObj.readline()
 
+    output['longEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'z', 'zp'))
+
     return output
 
 def parsePROFGRdata(fileObj):

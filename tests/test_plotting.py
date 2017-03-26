@@ -14,6 +14,8 @@ class parseEMITGRdataTest(unittest.TestCase):
             self.assertEqual(len(colData['axisLimsY']), 4)
             self.assertGreater(len(colData['vertEllipse'].data['y']), 0)
             self.assertGreater(len(colData['vertEllipse'].data['yp']), 0)
+            self.assertGreater(len(colData['longEllipse'].data['z']), 0)
+            self.assertGreater(len(colData['longEllipse'].data['zp']), 0)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,6 @@
 from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
-from bokeh.models import ColumnDataSource
 
 class NewPynPlot:
     '''
@@ -291,46 +290,87 @@ class PynPlt(object):
 
         show(grid)
 
-def parseEmitPlot():
+def parseEmitPlot(filename = 'emit.plot'):
     plotTypeDefs = {
         1: parseEMITGRdata,
         2: parsePROFGRdata,
         3: parseENVELdata
     }
 
-    with open('emit.plot') as emitPlotFile:
-        plotTypeNum = int(emitPlotFile.readline().strip())
-        plotFunc = plotTypeDefs[plotTypeNum]
-        plotFunc()
+    plotData = {1: [], 2: [], 3: []}
+
+    with open(filename) as emitPlotFile:
+        while True:
+            plotTypeNum = int(emitPlotFile.readline().strip())
+            plotFunc = plotTypeDefs[plotTypeNum]
+            plotData[plotTypeNum].append(plotFunc(emitPlotFile))
+
+    return plotData
 
 def parseEMITGRdata(fileObj):
     output = {}
-    plotTitle = fileObj.readline().strip()
+    output['plotTitle'] = fileObj.readline().strip()
     output['axisLimsX'] = [float(i) for i in fileObj.readline().strip().split()]
-    output['horizEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'x', 'xp'))
+    output['horizEllipse'] = _getPairDataFromFile(fileObj, 'x', 'xp')
 
     numParts = int(fileObj.readline().strip())
     xBeamDict = _getPairDataFromFile(fileObj, 'x', 'xp', numParts)
 
     output['axisLimsY'] = [float(i) for i in fileObj.readline().strip().split()]
-    output['vertEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'y', 'yp'))
+    output['vertEllipse'] = _getPairDataFromFile(fileObj, 'y', 'yp')
 
     numParts = int(fileObj.readline().strip())
     yBeamDict = _getPairDataFromFile(fileObj, 'y', 'yp', numParts)
 
-    # Skip a couple of lines
+    # Skip a line
     fileObj.readline()
-    fileObj.readline()
+    output['axisLimsZ'] = [float(i) for i in fileObj.readline().strip().split()]
 
-    output['longEllipse'] = ColumnDataSource(_getPairDataFromFile(fileObj, 'z', 'zp'))
+    output['longEllipse'] = _getPairDataFromFile(fileObj, 'z', 'zp')
+
+    numParts = int(fileObj.readline().strip())
+    zBeamDict = _getPairDataFromFile(fileObj, 'z', 'zp', numParts)
+
+    beamDict = dict()
+    beamDict.update(xBeamDict)
+    beamDict.update(yBeamDict)
+    beamDict.update(zBeamDict)
+    output['beamDict'] = beamDict
 
     return output
 
 def parsePROFGRdata(fileObj):
-    pass
+    output = {}
+    output['plotTitle'] = fileObj.readline().strip()
+    output['axisLimsX'] = [float(i) for i in fileObj.readline().strip().split()]
+
+    output['beamDict'] = dict()
+
+    numParts = int(fileObj.readline().strip())
+    output['beamDict'].update(_getPairDataFromFile(fileObj, 'z', 'x', numParts))
+
+    output['axisLimsY'] = [float(i) for i in fileObj.readline().strip().split()]
+    numParts = int(fileObj.readline().strip())
+    output['beamDict'].update(_getPairDataFromFile(fileObj, 'z', 'y', numParts))
+
+    output['normedProfiles'] = dict()
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'x', 'val', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'y', 'val', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'z', 'val', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'xp', 'val', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'yp', 'val', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['normedProfiles'].update(_getPairDataFromFile(fileObj, 'zp', 'val', numPoints))
+
+    return output
 
 def parseENVELdata(fileObj):
-    pass
+    return None
 
 def _getPairDataFromFile(fileObj, x1, x2, numLines=201):
     dataDict = {x1: [], x2: []}

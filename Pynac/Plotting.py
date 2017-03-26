@@ -301,7 +301,10 @@ def parseEmitPlot(filename = 'emit.plot'):
 
     with open(filename) as emitPlotFile:
         while True:
-            plotTypeNum = int(emitPlotFile.readline().strip())
+            try:
+                plotTypeNum = int(emitPlotFile.readline().strip())
+            except ValueError: # EOF
+                break
             plotFunc = plotTypeDefs[plotTypeNum]
             plotData[plotTypeNum].append(plotFunc(emitPlotFile))
 
@@ -370,7 +373,35 @@ def parsePROFGRdata(fileObj):
     return output
 
 def parseENVELdata(fileObj):
-    return None
+    output = {}
+    output['plotTitleTrans'] = fileObj.readline().strip()
+    output['axisLimsTrans'] = [float(i) for i in fileObj.readline().strip().split()]
+
+    output['envelopes'] = dict()
+    numPoints = int(fileObj.readline().strip())
+    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'x', numPoints))
+    numPoints = int(fileObj.readline().strip())
+    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'y', numPoints))
+
+    # Skip a line
+    fileObj.readline()
+
+    output['plotTitleEnergy'] = fileObj.readline().strip()
+    output['axisLimsEnergy'] = [float(i) for i in fileObj.readline().strip().split()]
+
+    numPoints = int(fileObj.readline().strip())
+    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'dW/W', numPoints))
+
+    # Skip a line
+    fileObj.readline()
+
+    output['plotTitlePhase'] = fileObj.readline().strip()
+    output['axisLimsPhase'] = [float(i) for i in fileObj.readline().strip().split()]
+
+    numPoints = int(fileObj.readline().strip())
+    output['envelopes'].update(_getPairDataFromFile(fileObj, 's', 'phi', numPoints))
+
+    return output
 
 def _getPairDataFromFile(fileObj, x1, x2, numLines=201):
     dataDict = {x1: [], x2: []}

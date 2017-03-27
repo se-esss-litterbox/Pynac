@@ -353,7 +353,16 @@ class NewPynPlt:
 
         self.envelColumnData = []
         for plotData in parsedData[3]:
-            pass
+            beamEnv = plotData['envelopes']
+            self.envelColumnData.append({
+                'envelopes': ColumnDataSource(data=dict(
+                    s = beamEnv['s'],
+                    x = beamEnv['x'],
+                    y = beamEnv['y'],
+                    w = beamEnv['dW/W'],
+                    phase = beamEnv['phi'],
+                ))
+            })
 
     def parseEmitPlot(self):
         plotTypeDefs = {
@@ -365,11 +374,8 @@ class NewPynPlt:
         plotData = {1: [], 2: [], 3: []}
 
         with open(self.filename) as self.emitPlotFile:
-            while True:
-                try:
-                    plotTypeNum = int(self.emitPlotFile.readline().strip())
-                except ValueError: # EOF
-                    break
+            for line in iter(self.emitPlotFile.readline, ''):
+                plotTypeNum = int(line.strip())
                 plotFunc = plotTypeDefs[plotTypeNum]
                 plotData[plotTypeNum].append(plotFunc())
 

@@ -16,9 +16,13 @@ class parseEmitPlotTest(unittest.TestCase):
 
         self.assertIsInstance(plotter.profgrColumnData, list)
         self.assertEqual(len(plotter.profgrColumnData), 2)
+        self.assertIn('beam', plotter.profgrColumnData[0])
+        self.assertIn('normedProfX', plotter.profgrColumnData[0])
+        self.assertIn('normedProfZP', plotter.profgrColumnData[0])
 
         self.assertIsInstance(plotter.envelColumnData, list)
         self.assertEqual(len(plotter.envelColumnData), 1)
+        self.assertIn('envelopes', plotter.envelColumnData[0])
 
 if __name__ == '__main__':
     unittest.main()

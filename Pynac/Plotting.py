@@ -2,6 +2,7 @@ from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
 from bokeh.models.sources import ColumnDataSource
+from bokeh.models import BoxSelectTool
 
 class PynPlt(object):
     '''
@@ -285,7 +286,7 @@ class NewPynPlt:
     def __init__(self, filename='emit.plot'):
         self.filename = filename
 
-        parsedData = self.parseEmitPlot()
+        parsedData = self._parseEmitPlot()
 
         self.emitgrColumnData = []
         for plotData in parsedData[1]:
@@ -294,6 +295,7 @@ class NewPynPlt:
             lEllipseData = plotData['longEllipse']
             beamData = plotData['beamDict']
             self.emitgrColumnData.append({
+                'plotTitle': plotData['plotTitle'],
                 'horizEllipse': ColumnDataSource(data=dict(
                     x = hEllipseData['x'],
                     xp = hEllipseData['xp']
@@ -330,24 +332,24 @@ class NewPynPlt:
                     xval = normedProfs['xval'],
                 )),
                 'normedProfY': ColumnDataSource(data=dict(
-                    x = normedProfs['y'],
-                    xval = normedProfs['yval'],
+                    y = normedProfs['y'],
+                    yval = normedProfs['yval'],
                 )),
                 'normedProfZ': ColumnDataSource(data=dict(
-                    x = normedProfs['z'],
-                    xval = normedProfs['zval'],
+                    z = normedProfs['z'],
+                    zval = normedProfs['zval'],
                 )),
                 'normedProfXP': ColumnDataSource(data=dict(
-                    x = normedProfs['xp'],
-                    xval = normedProfs['xpval'],
+                    xp = normedProfs['xp'],
+                    xpval = normedProfs['xpval'],
                 )),
                 'normedProfYP': ColumnDataSource(data=dict(
-                    x = normedProfs['yp'],
-                    xval = normedProfs['ypval'],
+                    yp = normedProfs['yp'],
+                    ypval = normedProfs['ypval'],
                 )),
                 'normedProfZP': ColumnDataSource(data=dict(
-                    x = normedProfs['zp'],
-                    xval = normedProfs['zpval'],
+                    zp = normedProfs['zp'],
+                    zpval = normedProfs['zpval'],
                 )),
             })
 
@@ -364,7 +366,81 @@ class NewPynPlt:
                 ))
             })
 
-    def parseEmitPlot(self):
+    def plotEMITGR(self, plotInd):
+        fig0 = figure(title=self.emitgrColumnData[plotInd]['plotTitle'],
+                      plot_height=400,
+                      plot_width=400,
+                      )
+        fig0.add_tools(BoxSelectTool())
+        fig1 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig1.add_tools(BoxSelectTool())
+        fig2 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig2.add_tools(BoxSelectTool())
+        fig3 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig3.add_tools(BoxSelectTool())
+
+        fig0.circle('x', 'xp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig0.line('x', 'xp', line_width=2, color='red',
+                  source=self.emitgrColumnData[plotInd]['horizEllipse'])
+        fig1.circle('y', 'yp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig1.line('y', 'yp', line_width=2, color='red',
+                  source=self.emitgrColumnData[plotInd]['vertEllipse'])
+        fig2.circle('x', 'y', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig3.circle('z', 'zp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig3.line('z', 'zp', line_width=2, color='red',
+                  source=self.emitgrColumnData[plotInd]['longEllipse'])
+
+        grid = gridplot([fig0, fig1], [fig2, fig3])
+
+        show(grid)
+
+    def plotPROFGR(self, plotInd):
+        fig0 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig0.add_tools(BoxSelectTool())
+        fig1 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig1.add_tools(BoxSelectTool())
+        fig2 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig2.add_tools(BoxSelectTool())
+        fig3 = figure(plot_height=400,
+                      plot_width=400,
+                      )
+        fig3.add_tools(BoxSelectTool())
+
+        fig0.circle('z', 'x', color="#2222aa", alpha=0.5,
+            line_width=2, source=self.profgrColumnData[plotInd]['beam'])
+        fig1.circle('z', 'y', color="#2222aa", alpha=0.5,
+            line_width=2, source=self.profgrColumnData[plotInd]['beam'])
+        fig2.line('x', 'xval', color='red', source=self.profgrColumnData[plotInd]['normedProfX'])
+        fig2.line('y', 'yval', color='green', source=self.profgrColumnData[plotInd]['normedProfY'])
+        fig2.line('z', 'zval', color='blue', source=self.profgrColumnData[plotInd]['normedProfZ'])
+        fig3.line('xp', 'xpval', color='red', source=self.profgrColumnData[plotInd]['normedProfXP'])
+        fig3.line('yp', 'ypval', color='green', source=self.profgrColumnData[plotInd]['normedProfYP'])
+        fig3.line('zp', 'zpval', color='blue', source=self.profgrColumnData[plotInd]['normedProfZP'])
+
+        grid = gridplot([fig0, fig1], [fig2, fig3])
+
+        show(grid)
+
+    def plotENVEL(self, plotInd):
+        pass
+
+    def _parseEmitPlot(self):
         plotTypeDefs = {
             1: self._parseEMITGRdata,
             2: self._parsePROFGRdata,

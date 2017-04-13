@@ -211,7 +211,9 @@ class Pynac(object):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
 
 class Builder:
-    inputBeamLattice = None
+    def __init__(self):
+        self.inputBeamLattice = None
+        self.firstPlotDone = False
 
     def buildABeam(self):
         betaX = widgets.FloatSlider(
@@ -552,13 +554,30 @@ class Builder:
         addBuiltBeam.on_click(addBuiltBeam_click)
 
         def runSim_click(b):
+            plotitBtn.disabled = True
+            plotitBtn.button_style = ''
             self.sim.run()
             plotitBtn.disabled = False
             plotitBtn.button_style = 'warning'
         runSimBtn.on_click(runSim_click)
 
         def plotitBtn_click(b):
-            pynplt.PynPlt().plotit()
+            if not self.firstPlotDone:
+                self.plotitTool = pynplt.NewPynPlt()
+                self.plotitTool.parseAndOrganise()
+                self.handle0 = self.plotitTool.plotEMITGR(0)
+                # self.handle1 = self.plotitTool.plotENVEL(0)
+                self.firstPlotDone = True
+            else:
+                self.plotitTool.parseAndOrganise()
+                # push_notebook(handle=self.handle0)
+                push_notebook(handle=self.handle1)
+                # for p in self.plotitTool.plotHandleDict['emitgrHandle']:
+                #     push_notebook(handle=p)
+                # for p in self.plotitTool.plotHandleDict['envelHandle']:
+                #     push_notebook(handle=p)
+                # for p in self.plotitTool.plotHandleDict['profgrHandle']:
+                #     push_notebook(handle=p)
         plotitBtn.on_click(plotitBtn_click)
 
 class PhaseSpace:

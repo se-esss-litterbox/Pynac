@@ -1,6 +1,9 @@
 from bokeh.io import push_notebook, show, output_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot, column, row
+from bokeh.models.sources import ColumnDataSource
+from bokeh.models import BoxSelectTool
+from collections import defaultdict
 
 class PynPlt(object):
     '''
@@ -279,3 +282,316 @@ class PynPlt(object):
         grid = gridplot([p0,p1],[p2,p3])
 
         show(grid)
+
+class NewPynPlt:
+    def __init__(self, filename='emit.plot'):
+        self.filename = filename
+        self.plotHandleDict = defaultdict(list)
+        self.emitgrColumnData = []
+        self.profgrColumnData = []
+        self.envelColumnData = []
+
+        self.parseAndOrganise()
+
+    def parseAndOrganise(self):
+        parsedData = self._parseEmitPlot()
+
+        for ind, plotData in enumerate(parsedData[1]):
+            hEllipseData = plotData['horizEllipse']
+            vEllipseData = plotData['vertEllipse']
+            lEllipseData = plotData['longEllipse']
+            beamData = plotData['beamDict']
+            try:
+                self.emitgrColumnData[ind]['plotTitle'] = plotData['plotTitle']
+                self.emitgrColumnData[ind]['horizEllipse'].data['x'] = hEllipseData['x']
+                self.emitgrColumnData[ind]['horizEllipse'].data['xp'] = hEllipseData['xp']
+                self.emitgrColumnData[ind]['vertEllipse'].data['y'] = vEllipseData['y']
+                self.emitgrColumnData[ind]['vertEllipse'].data['yp'] = vEllipseData['yp']
+                self.emitgrColumnData[ind]['longEllipse'].data['z'] = lEllipseData['z']
+                self.emitgrColumnData[ind]['longEllipse'].data['zp'] = lEllipseData['zp']
+                self.emitgrColumnData[ind]['beam'].data['x'] = beamData['x']
+                self.emitgrColumnData[ind]['beam'].data['xp'] = beamData['xp']
+                self.emitgrColumnData[ind]['beam'].data['y'] = beamData['y']
+                self.emitgrColumnData[ind]['beam'].data['yp'] = beamData['yp']
+                self.emitgrColumnData[ind]['beam'].data['z'] = beamData['z']
+                self.emitgrColumnData[ind]['beam'].data['zp'] = beamData['zp']
+            except IndexError:
+                self.emitgrColumnData.append({
+                    'plotTitle': plotData['plotTitle'],
+                    'horizEllipse': ColumnDataSource(data=dict(
+                        x = hEllipseData['x'],
+                        xp = hEllipseData['xp']
+                    )),
+                    'vertEllipse': ColumnDataSource(data=dict(
+                        y = vEllipseData['y'],
+                        yp = vEllipseData['yp']
+                    )),
+                    'longEllipse': ColumnDataSource(data=dict(
+                        z = lEllipseData['z'],
+                        zp = lEllipseData['zp']
+                    )),
+                    'beam': ColumnDataSource(data=dict(
+                        x = beamData['x'],
+                        xp = beamData['xp'],
+                        y = beamData['y'],
+                        yp = beamData['yp'],
+                        z = beamData['z'],
+                        zp = beamData['zp'],
+                    ))
+                })
+
+        for ind, plotData in enumerate(parsedData[2]):
+            normedProfs = plotData['normedProfiles']
+            try:
+                raise IndexError
+            except IndexError:
+                self.profgrColumnData.append({
+                    'beam': ColumnDataSource(data=dict(
+                        x = plotData['beamDict']['x'],
+                        y = plotData['beamDict']['y'],
+                        z = plotData['beamDict']['z'],
+                    )),
+                    'normedProfX': ColumnDataSource(data=dict(
+                        x = normedProfs['x'],
+                        xval = normedProfs['xval'],
+                    )),
+                    'normedProfY': ColumnDataSource(data=dict(
+                        y = normedProfs['y'],
+                        yval = normedProfs['yval'],
+                    )),
+                    'normedProfZ': ColumnDataSource(data=dict(
+                        z = normedProfs['z'],
+                        zval = normedProfs['zval'],
+                    )),
+                    'normedProfXP': ColumnDataSource(data=dict(
+                        xp = normedProfs['xp'],
+                        xpval = normedProfs['xpval'],
+                    )),
+                    'normedProfYP': ColumnDataSource(data=dict(
+                        yp = normedProfs['yp'],
+                        ypval = normedProfs['ypval'],
+                    )),
+                    'normedProfZP': ColumnDataSource(data=dict(
+                        zp = normedProfs['zp'],
+                        zpval = normedProfs['zpval'],
+                    )),
+                })
+
+        for ind, plotData in enumerate(parsedData[3]):
+            beamEnv = plotData['envelopes']
+            try:
+                raise IndexError
+            except IndexError:
+                self.envelColumnData.append({
+                    'envelopes': ColumnDataSource(data=dict(
+                        s = beamEnv['s'],
+                        x = beamEnv['x'],
+                        y = beamEnv['y'],
+                        w = beamEnv['dW/W'],
+                        phase = beamEnv['phi'],
+                    ))
+                })
+
+    def plotit(self):
+        for i in range(len(self.emitgrColumnData)):
+            try:
+                test = self.plotHandleDict['emitgrHandle'][i]
+                self.plotHandleDict['emitgrHandle'][i] = self.plotEMITGR(i)
+            except IndexError:
+                self.plotHandleDict['emitgrHandle'].append(self.plotEMITGR(i))
+        for i in range(len(self.envelColumnData)):
+            try:
+                test = self.plotHandleDict['envelHandle'][i]
+                self.plotHandleDict['envelHandle'][i] = self.plotENVEL(i)
+            except IndexError:
+                self.plotHandleDict['envelHandle'].append(self.plotENVEL(i))
+        for i in range(len(self.profgrColumnData)):
+            try:
+                test = self.plotHandleDict['profgrHandle'][i]
+                self.plotHandleDict['profgrHandle'][i] = self.plotPROFGR(i)
+            except IndexError:
+                self.plotHandleDict['profgrHandle'].append(self.plotPROFGR(i))
+
+    def plotEMITGR(self, plotInd):
+        fig0 = figure(title=self.emitgrColumnData[plotInd]['plotTitle'],
+                      plot_height=400, plot_width=400)
+        fig0.add_tools(BoxSelectTool())
+        fig1 = figure(plot_height=400, plot_width=400)
+        fig1.add_tools(BoxSelectTool())
+        fig2 = figure(plot_height=400, plot_width=400)
+        fig2.add_tools(BoxSelectTool())
+        fig3 = figure(plot_height=400, plot_width=400)
+        fig3.add_tools(BoxSelectTool())
+
+        fig0.circle('x', 'xp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig0.line('x', 'xp', line_width=2, color='red',
+                    source=self.emitgrColumnData[plotInd]['horizEllipse'])
+        fig1.circle('y', 'yp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig1.line('y', 'yp', line_width=2, color='red',
+                    source=self.emitgrColumnData[plotInd]['vertEllipse'])
+        fig2.circle('x', 'y', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig3.circle('z', 'zp', color="#2222aa", alpha=0.5,
+                    line_width=2, source=self.emitgrColumnData[plotInd]['beam'])
+        fig3.line('z', 'zp', line_width=2, color='red',
+                    source=self.emitgrColumnData[plotInd]['longEllipse'])
+
+        grid = gridplot([fig0, fig1], [fig2, fig3])
+
+        return show(grid, notebook_handle=True)
+
+    def plotPROFGR(self, plotInd):
+        fig0 = figure(plot_height=400, plot_width=400)
+        fig0.add_tools(BoxSelectTool())
+        fig1 = figure(plot_height=400, plot_width=400)
+        fig1.add_tools(BoxSelectTool())
+        fig2 = figure(plot_height=400, plot_width=400)
+        fig2.add_tools(BoxSelectTool())
+        fig3 = figure(plot_height=400, plot_width=400)
+        fig3.add_tools(BoxSelectTool())
+
+        fig0.circle('z', 'x', color="#2222aa", alpha=0.5,
+            line_width=2, source=self.profgrColumnData[plotInd]['beam'])
+        fig1.circle('z', 'y', color="#2222aa", alpha=0.5,
+            line_width=2, source=self.profgrColumnData[plotInd]['beam'])
+        fig2.line('x', 'xval', color='red', source=self.profgrColumnData[plotInd]['normedProfX'])
+        fig2.line('y', 'yval', color='green', source=self.profgrColumnData[plotInd]['normedProfY'])
+        fig2.line('z', 'zval', color='blue', source=self.profgrColumnData[plotInd]['normedProfZ'])
+        fig3.line('xp', 'xpval', color='red', source=self.profgrColumnData[plotInd]['normedProfXP'])
+        fig3.line('yp', 'ypval', color='green', source=self.profgrColumnData[plotInd]['normedProfYP'])
+        fig3.line('zp', 'zpval', color='blue', source=self.profgrColumnData[plotInd]['normedProfZP'])
+
+        grid = gridplot([fig0, fig1], [fig2, fig3])
+
+        return show(grid, notebook_handle=True)
+
+    def plotENVEL(self, plotInd):
+        fig0 = figure(plot_height=400, plot_width=800)
+        fig0.add_tools(BoxSelectTool())
+        fig1 = figure(plot_height=400, plot_width=800)
+        fig1.add_tools(BoxSelectTool())
+        fig2 = figure(plot_height=400, plot_width=800)
+        fig0.line('s', 'x', color='blue', line_width=1, source=self.envelColumnData[plotInd]['envelopes'])
+        fig0.line('s', 'y', color='green', line_width=1, source=self.envelColumnData[plotInd]['envelopes'])
+        fig1.line('s', 'w', color='blue', line_width=1, source=self.envelColumnData[plotInd]['envelopes'])
+        fig2.line('s', 'phase', color='blue', line_width=1, source=self.envelColumnData[plotInd]['envelopes'])
+
+        grid = gridplot([fig0], [fig1], [fig2])
+
+        return show(grid, notebook_handle=True)
+
+    def _parseEmitPlot(self):
+        plotTypeDefs = {
+            1: self._parseEMITGRdata,
+            2: self._parsePROFGRdata,
+            3: self._parseENVELdata
+        }
+
+        plotData = {1: [], 2: [], 3: []}
+
+        with open(self.filename) as self.emitPlotFile:
+            for line in iter(self.emitPlotFile.readline, ''):
+                plotTypeNum = int(line.strip())
+                plotFunc = plotTypeDefs[plotTypeNum]
+                plotData[plotTypeNum].append(plotFunc())
+
+        return plotData
+
+    def _parseEMITGRdata(self):
+        output = {}
+        output['beamDict'] = dict()
+
+        output['plotTitle'] = self.emitPlotFile.readline().strip()
+        output['axisLimsX'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        output['horizEllipse'] = self._getPairDataFromFile('x', 'xp')
+
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('x', 'xp', numParts))
+
+        output['axisLimsY'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        output['vertEllipse'] = self._getPairDataFromFile('y', 'yp')
+
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('y', 'yp', numParts))
+
+        # Skip a line
+        self.emitPlotFile.readline()
+        output['axisLimsZ'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        output['longEllipse'] = self._getPairDataFromFile('z', 'zp')
+
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'zp', numParts))
+
+        return output
+
+    def _parsePROFGRdata(self):
+        output = {}
+        output['plotTitle'] = self.emitPlotFile.readline().strip()
+        output['axisLimsX'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        output['beamDict'] = dict()
+
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'x', numParts))
+
+        output['axisLimsY'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+        numParts = int(self.emitPlotFile.readline().strip())
+        output['beamDict'].update(self._getPairDataFromFile('z', 'y', numParts))
+
+        output['normedProfiles'] = dict()
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('x', 'xval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('y', 'yval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('z', 'zval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('xp', 'xpval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('yp', 'ypval', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['normedProfiles'].update(self._getPairDataFromFile('zp', 'zpval', numPoints))
+
+        return output
+
+    def _parseENVELdata(self):
+        output = {}
+        output['plotTitleTrans'] = self.emitPlotFile.readline().strip()
+        output['axisLimsTrans'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        output['envelopes'] = dict()
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'x', numPoints))
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'y', numPoints))
+
+        # Skip a line
+        self.emitPlotFile.readline()
+
+        output['plotTitleEnergy'] = self.emitPlotFile.readline().strip()
+        output['axisLimsEnergy'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'dW/W', numPoints))
+
+        # Skip a line
+        self.emitPlotFile.readline()
+
+        output['plotTitlePhase'] = self.emitPlotFile.readline().strip()
+        output['axisLimsPhase'] = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+
+        numPoints = int(self.emitPlotFile.readline().strip())
+        output['envelopes'].update(self._getPairDataFromFile('s', 'phi', numPoints))
+
+        return output
+
+    def _getPairDataFromFile(self, x1, x2, numLines=201):
+        dataDict = {x1: [], x2: []}
+        for _ in range(numLines):
+            datum = [float(i) for i in self.emitPlotFile.readline().strip().split()]
+            dataDict[x1].append(datum[0])
+            dataDict[x2].append(datum[1])
+        return dataDict

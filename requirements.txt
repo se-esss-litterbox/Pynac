@@ -4,7 +4,7 @@ appnope==0.1.0
 argh==0.26.2
 Babel==2.3.4
 bleach==2.0.0
-bokeh>=0.12.0
+bokeh>=0.11.0
 cycler==0.10.0
 decorator==4.0.11
 docutils==0.13.1

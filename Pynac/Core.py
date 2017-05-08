@@ -669,34 +669,34 @@ def EleFromPynac(pynacRepr):
         obj = pynacRepr
     return obj
 
-    def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
-        '''
-        Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
-        number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
-        and ``pynacInSubDirectory``.
-        '''
-        with ProcessPoolExecutor(max_workers = max_workers) as executor:
-            tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
-        exc = [task.exception() for task in tasks if task.exception()]
-        if exc:
-            return exc
-        else:
-            return "No errors encountered"
+def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
+    '''
+    Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
+    number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
+    and ``pynacInSubDirectory``.
+    '''
+    with ProcessPoolExecutor(max_workers = max_workers) as executor:
+        tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
+    exc = [task.exception() for task in tasks if task.exception()]
+    if exc:
+        return exc
+    else:
+        return "No errors encountered"
 
-    def doSingleDynacProcess(num, filelist, pynacFunc):
-        '''
-        Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
-        docstring for that context manager to understand the meaning of the ``num`` and
-        ``filelist`` inputs.
+def doSingleDynacProcess(num, filelist, pynacFunc):
+    '''
+    Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
+    docstring for that context manager to understand the meaning of the ``num`` and
+    ``filelist`` inputs.
 
-        The primary purpose of this function is to enable multiprocess use of Pynac via
-        the ``multiProcessPynac`` function.
-        '''
-        with pynacInSubDirectory(num, filelist):
-            pynacFunc()
+    The primary purpose of this function is to enable multiprocess use of Pynac via
+    the ``multiProcessPynac`` function.
+    '''
+    with pynacInSubDirectory(num, filelist):
+        pynacFunc()
 
-    @contextmanager
-    def pynacInSubDirectory(num, filelist):
+@contextmanager
+def pynacInSubDirectory(num, filelist):
         '''
         A context manager to create a new directory, move the files listed in ``filelist``
         to that directory, and change to that directory before handing control back to

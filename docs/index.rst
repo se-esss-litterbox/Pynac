@@ -17,10 +17,6 @@ It has been thoroughly `tested on Python 3.2 to 3.6`_, but is known **not** to w
 on Python2.  Sorry to those people who haven't yet made the leap to Python3.
 (`Maybe you should?`_)
 
-.. warning:: Pynac requires at least v17 of Dynac.  This is yet to be released,
-             and so Pynac users will have to make do with the unofficial version
-             of Dynac included with Pynac.
-
 Pynac allows for a very interactive style of use, while also allowing large-scale
 simulations to be performed on multi-core, multi-CPU, machines without supervision.
 We believe this flexibility is of huge benefit to those designing and modelling

@@ -245,7 +245,9 @@ class PynPlt(object):
             plot_height=400,
             plot_width=350,
             x_range=data['xscale'][:2],
-            y_range=data['xscale'][2:]
+            y_range=data['xscale'][2:],
+            x_axis_label='x Position / cm',
+            y_axis_label='x Angle / m.rad'
            )
         p0.line(data['Ellipse-x'], data['Ellipse-xp'], line_width=2)
         p0.circle(x, y, color="black", size=1)
@@ -255,7 +257,9 @@ class PynPlt(object):
             plot_height=400,
             plot_width=350,
             x_range=data['yscale'][:2],
-            y_range=data['yscale'][2:]
+            y_range=data['yscale'][2:],
+            x_axis_label='y Position / cm',
+            y_axis_label='y Angle / m.rad'
            )
         p1.line(data['Ellipse-y'], data['Ellipse-yp'], line_width=2)
         p1.circle(x, y, color="black", size=1)
@@ -265,7 +269,9 @@ class PynPlt(object):
             plot_height=400,
             plot_width=350,
             x_range=data['xscale'][:2],
-            y_range=data['yscale'][:2]
+            y_range=data['yscale'][:2],
+            x_axis_label='x Position / cm',
+            y_axis_label='y Position / cm'
            )
         p2.circle(x, y, color="black", size=1)
 
@@ -274,7 +280,9 @@ class PynPlt(object):
             plot_height=400,
             plot_width=350,
             x_range=data['zscale'][:2],
-            y_range=data['zscale'][2:]
+            y_range=data['zscale'][2:],
+            x_axis_label='Phase / deg',
+            y_axis_label='Energy offset / MeV'
            )
         p3.line(data['Ellipse-z'], data['Ellipse-zp'], line_width=2)
         p3.circle(x, y, color="black", size=1)

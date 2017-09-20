@@ -118,3 +118,11 @@ dynacProc_*
 
 
 tests/elementCoverage.py
+
+
+.idea/
+Untitled.ipynb
+docs/_templates/
+docs/workingDir/
+tests/tempWorkingDir/
+workingDir/

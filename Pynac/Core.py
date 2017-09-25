@@ -1,6 +1,6 @@
-'''
-The main module for Pynac.
-'''
+"""
+The primary module for Pynac.
+"""
 import subprocess as subp
 from contextlib import contextmanager
 from concurrent.futures import ProcessPoolExecutor
@@ -19,6 +19,7 @@ from bokeh.io import show, push_notebook, curdoc, curstate
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
 import Pynac.Plotting as pynplt
+
 
 class Pynac(object):
     '''
@@ -115,7 +116,7 @@ class Pynac(object):
         type matches the input string.  Multiple input strings can be given, either
         as a comma-separated list or as a genuine Python list.
         '''
-        return [i for i,x in enumerate(self.lattice) for y in X if DynacFromEle(x) == y]
+        return [i for i,x in enumerate(self.lattice) for y in X if dynac_from_ele(x) == y]
 
     def getPlotInds(self):
         '''
@@ -191,7 +192,7 @@ class Pynac(object):
                     dat.append([float(i) if self._mightBeNumber(i) else int(i) for i in term.split(' ')])
                 except ValueError:
                     dat.append([term])
-        self.lattice.append(EleFromPynac([dynacStr, dat]))
+        self.lattice.append(ele_from_pynac([dynacStr, dat]))
         return currentInd + numFields
 
     def _getNumFieldsFromiTwiss(self, ind):
@@ -209,6 +210,7 @@ class Pynac(object):
 
     def _mightBeNumber(self, thing):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
+
 
 class Builder:
     def __init__(self):
@@ -580,125 +582,133 @@ class Builder:
                 #     push_notebook(handle=p)
         plotitBtn.on_click(plotitBtn_click)
 
+
 class PhaseSpace:
-    '''
+    """
     A representation of the phase space of the simulated bunch read from the
     ``dynac.short`` file.  Each of the phase space parameters is represented as a
     ``elements.Parameter`` namedtuple.
 
     This class is intended to be used in interactive explorations of the data
     produced during Pynac simulations.
-    '''
-    def __init__(self, dataStrMatrix):
-        self.dataStrMatrix = dataStrMatrix
-        self.xPhaseSpace = self._getPSFromLine(5)
-        self.yPhaseSpace = self._getPSFromLine(6)
-        self.zPhaseSpace = self._getPSFromLine(4)
+    """
+    def __init__(self, data_str_matrix):
+        self.dataStrMatrix = data_str_matrix
+        self.xPhaseSpace = self._get_ps_from_line(5)
+        self.yPhaseSpace = self._get_ps_from_line(6)
+        self.zPhaseSpace = self._get_ps_from_line(4)
         self.COG = CentreOfGravity(
-            x = Param(val = float(self.dataStrMatrix[1][0]), unit = 'mm'),
-            xp = Param(val = float(self.dataStrMatrix[1][1]), unit = 'mrad'),
-            y = Param(val = float(self.dataStrMatrix[1][2]), unit = 'mm'),
-            yp = Param(val = float(self.dataStrMatrix[1][3]), unit = 'mrad'),
-            KE = Param(val = float(self.dataStrMatrix[0][3]), unit = 'MeV'),
-            TOF = Param(val = float(self.dataStrMatrix[0][4]), unit = 'deg'),
+            x= Param(val=float(self.dataStrMatrix[1][0]), unit='mm'),
+            xp=Param(val=float(self.dataStrMatrix[1][1]), unit='mrad'),
+            y= Param(val=float(self.dataStrMatrix[1][2]), unit='mm'),
+            yp=Param(val=float(self.dataStrMatrix[1][3]), unit='mrad'),
+            KE=Param(val=float(self.dataStrMatrix[0][3]), unit='MeV'),
+            TOF=Param(val=float(self.dataStrMatrix[0][4]), unit='deg'),
         )
         self.particlesLeft = Param(val = float(self.dataStrMatrix[4][5]), unit = 'num')
 
-    def _getPSFromLine(self, num):
+    def _get_ps_from_line(self, num):
         try:
             test = float(self.dataStrMatrix[num][6])
             return SingleDimPS(
-                pos = Param(val = float(self.dataStrMatrix[num][0]), unit = 'mm'),
-                mom = Param(val = float(self.dataStrMatrix[num][1]), unit = 'mrad'),
-                R12 = Param(val = float(self.dataStrMatrix[num][2]), unit = '?'),
-                normEmit = Param(val = float(self.dataStrMatrix[num][3]), unit = 'mm.mrad'),
-                nonNormEmit = Param(val = float(self.dataStrMatrix[num][6]), unit = 'mm.mrad'),
+                pos=Param(val = float(self.dataStrMatrix[num][0]), unit='mm'),
+                mom=Param(val = float(self.dataStrMatrix[num][1]), unit='mrad'),
+                R12=Param(val = float(self.dataStrMatrix[num][2]), unit='?'),
+                normEmit=Param(val = float(self.dataStrMatrix[num][3]), unit='mm.mrad'),
+                nonNormEmit=Param(val = float(self.dataStrMatrix[num][6]), unit='mm.mrad'),
             )
-        except:
+        except IndexError:
             return SingleDimPS(
-                pos = Param(val = float(self.dataStrMatrix[num][0]), unit = 'deg'),
-                mom = Param(val = float(self.dataStrMatrix[num][1]), unit = 'keV'),
-                R12 = Param(val = float(self.dataStrMatrix[num][2]), unit = '?'),
-                normEmit = Param(val = float(self.dataStrMatrix[num][3]), unit = 'keV.ns'),
-                nonNormEmit = Param(val = None, unit = None),
+                mom=Param(val=float(self.dataStrMatrix[num][1]), unit='keV'),
+                pos=Param(val=float(self.dataStrMatrix[num][0]), unit='deg'),
+                R12=Param(val=float(self.dataStrMatrix[num][2]), unit='?'),
+                normEmit=Param(val=float(self.dataStrMatrix[num][3]), unit='keV.ns'),
+                nonNormEmit=Param(val = None, unit = None),
             )
 
     def __repr__(self):
-        reprStr = 'COG: ' + self.COG.__repr__()
-        reprStr += '\nparticles left: ' + self.particlesLeft.__repr__()
-        reprStr += '\nx: ' + self.xPhaseSpace.__repr__()
-        reprStr += '\ny: ' + self.yPhaseSpace.__repr__()
-        reprStr += '\nz: ' + self.zPhaseSpace.__repr__()
-        return reprStr
+        repr_str = 'COG: ' + self.COG.__repr__()
+        repr_str += '\nparticles left: ' + self.particlesLeft.__repr__()
+        repr_str += '\nx: ' + self.xPhaseSpace.__repr__()
+        repr_str += '\ny: ' + self.yPhaseSpace.__repr__()
+        repr_str += '\nz: ' + self.zPhaseSpace.__repr__()
+        return repr_str
 
-def makePhaseSpaceList():
-    '''
+
+def make_phase_space_list():
+    """
     Extract all the phase space information (due to ``EMIT`` commands in the input
     file), and create a list of PhaseSpace objects.  The primary purpose of this
     is for interactive explorations of the data produced during Pynac simulations.
-    '''
+    """
     with open('dynac.short') as f:
-        dataStr = ''.join(line for line in f.readlines())
-        dataStrArray = dataStr.split('beam (emit card)')[1:]
-        dataStrMatrix = [[j.strip().split() for j in i] for i in[chunk.split('\n')[1:8] for chunk in dataStrArray]]
+        data_str = ''.join(line for line in f.readlines())
+        data_str_array = data_str.split('beam (emit card)')[1:]
+        data_str_matrix = [[j.strip().split() for j in i] for i in[chunk.split('\n')[1:8] for chunk in data_str_array]]
 
-        return [PhaseSpace(data) for data in dataStrMatrix]
+        return [PhaseSpace(data) for data in data_str_matrix]
 
-def getNumberOfParticles():
-    '''
+
+def get_number_of_particles():
+    """
     Queries the ``dynac.short`` file for the number of particles used in the
     simulation.
-    '''
+    """
     with open('dynac.short') as f:
-        dataStr = ''.join(line for line in f.readlines())
-        numOfParts = int(dataStr.split('Simulation with')[1].strip().split()[0])
-    return numOfParts
+        data_str = ''.join(line for line in f.readlines())
+        num_of_parts = int(data_str.split('Simulation with')[1].strip().split()[0])
+    return num_of_parts
 
-def DynacFromEle(ele):
-    try:
-        dynStr = ele.dynacRepresentation()[0]
-    except AttributeError:
-        dynStr = ele[0]
-    return dynStr
 
-def EleFromPynac(pynacRepr):
+def dynac_from_ele(ele):
     try:
-        constructor = getattr(pyEle, pyEle._dynac2pynac[pynacRepr[0]])
-        obj = constructor.from_dynacRepr(pynacRepr)
+        dyn_str = ele.dynacRepresentation()[0]
     except AttributeError:
-        obj = pynacRepr
+        dyn_str = ele[0]
+    return dyn_str
+
+
+def ele_from_pynac(pynac_repr):
+    try:
+        constructor = getattr(pyEle, pyEle._dynac2pynac[pynac_repr[0]])
+        obj = constructor.from_dynacRepr(pynac_repr)
+    except AttributeError:
+        obj = pynac_repr
     return obj
 
-def multiProcessPynac(filelist, pynacFunc, numIters = 100, max_workers = 8):
-    '''
-    Use a ProcessPool from the ``concurrent.futures`` module to execute ``numIters``
-    number of instances of ``pynacFunc``.  This function takes advantage of ``doSingleDynacProcess``
-    and ``pynacInSubDirectory``.
-    '''
-    with ProcessPoolExecutor(max_workers = max_workers) as executor:
-        tasks = [executor.submit(doSingleDynacProcess, num, filelist, pynacFunc) for num in range(numIters)]
+
+def multi_process_pynac(file_list, pynac_func, num_iters=100, max_workers=8):
+    """
+    Use a ProcessPool from the ``concurrent.futures`` module to execute ``num_iters``
+    number of instances of ``pynac_func``.  This function takes advantage of ``do_single_dynac_process``
+    and ``pynac_in_sub_directory``.
+    """
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        tasks = [executor.submit(do_single_dynac_process, num, file_list, pynac_func) for num in range(num_iters)]
     exc = [task.exception() for task in tasks if task.exception()]
     if exc:
         return exc
     else:
         return "No errors encountered"
 
-def doSingleDynacProcess(num, filelist, pynacFunc):
-    '''
-    Execute ``pynacFunc`` in the ``pynacInSubDirectory`` context manager.  See the
+
+def do_single_dynac_process(num, filelist, pynac_func):
+    """
+    Execute ``pynac_func`` in the ``pynac_in_sub_directory`` context manager.  See the
     docstring for that context manager to understand the meaning of the ``num`` and
     ``filelist`` inputs.
 
     The primary purpose of this function is to enable multiprocess use of Pynac via
-    the ``multiProcessPynac`` function.
-    '''
-    with pynacInSubDirectory(num, filelist):
-        pynacFunc()
+    the ``multi_process_pynac`` function.
+    """
+    with pynac_in_sub_directory(num, filelist):
+        pynac_func()
+
 
 @contextmanager
-def pynacInSubDirectory(num, filelist):
-        '''
-        A context manager to create a new directory, move the files listed in ``filelist``
+def pynac_in_sub_directory(num, file_list):
+        """
+        A context manager to create a new directory, move the files listed in ``file_list``
         to that directory, and change to that directory before handing control back to
         context.  The closing action is to change back to the original directory.
 
@@ -706,16 +716,16 @@ def pynacInSubDirectory(num, filelist):
         will be deleted upon entering the context.
 
         The primary purpose of this function is to enable multiprocess use of Pynac via
-        the ``multiProcessPynac`` function.
-        '''
+        the ``multi_process_pynac`` function.
+        """
         print('Running %d' % num)
-        newDir = 'dynacProc_%04d' % num
-        if os.path.isdir(newDir):
-            shutil.rmtree(newDir)
-        os.mkdir(newDir)
-        for f in filelist:
-            shutil.copy(f, newDir)
-        os.chdir(newDir)
+        new_dir = 'dynacProc_%04d' % num
+        if os.path.isdir(new_dir):
+            shutil.rmtree(new_dir)
+        os.mkdir(new_dir)
+        for f in file_list:
+            shutil.copy(f, new_dir)
+        os.chdir(new_dir)
 
         yield
 

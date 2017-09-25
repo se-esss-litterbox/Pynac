@@ -2,7 +2,7 @@ import sys
 sys.path.append('../')
 import unittest
 import os
-from Pynac.Core import Pynac, getNumberOfParticles
+from Pynac.Core import Pynac, get_number_of_particles
 import Pynac.Elements as pyEle
 
 class PynacTest(unittest.TestCase):
@@ -52,7 +52,7 @@ class RunningPynacTest(unittest.TestCase):
         self.assertEqual(pynacFile, dynacFile)
 
     def test_getNumberOfParticles(self):
-        p = getNumberOfParticles()
+        p = get_number_of_particles()
         self.assertEqual(p, 1000)
 
     @classmethod

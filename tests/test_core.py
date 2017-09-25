@@ -9,30 +9,30 @@ class PynacTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
     def test_getPlotInds(self):
-        self.assertEqual(self.pynacInstance.getNumPlots(), 7)
+        self.assertEqual(self.pynacInstance.get_num_plots(), 7)
 
     def test_RemoveElement(self):
-        oldInds = self.pynacInstance.getXinds('DRIFT')
+        oldInds = self.pynacInstance.get_x_inds('DRIFT')
         del self.pynacInstance.lattice[oldInds[0]]
-        newInds = self.pynacInstance.getXinds('DRIFT')
+        newInds = self.pynacInstance.get_x_inds('DRIFT')
         self.assertEqual(len(oldInds), len(newInds) + 1)
 
     def test_getXinds_quads(self):
-        quadInds = self.pynacInstance.getXinds('QUADRUPO')
+        quadInds = self.pynacInstance.get_x_inds('QUADRUPO')
         self.assertEqual(len(quadInds), 243)
 
     def test_getXinds_cavmcs(self):
-        cavmcinds = self.pynacInstance.getXinds('CAVMC')
+        cavmcinds = self.pynacInstance.get_x_inds('CAVMC')
         self.assertEqual(len(cavmcinds), 62)
 
     def test_getXinds_nonsense(self):
-        nonsenseinds = self.pynacInstance.getXinds('BLAHBLAHBLAH')
+        nonsenseinds = self.pynacInstance.get_x_inds('BLAHBLAHBLAH')
         self.assertEqual(len(nonsenseinds), 0)
 
     def test_setNewRDBeamFile(self):
         newfilename = 'testfilename.in'
-        self.pynacInstance.setNewRDBEAMfile(newfilename)
-        inds = self.pynacInstance.getXinds('RDBEAM')
+        self.pynacInstance.set_new_rdbeam_file(newfilename)
+        inds = self.pynacInstance.get_x_inds('RDBEAM')
         self.assertEqual(self.pynacInstance.lattice[inds[0]][1][0][0], 'testfilename.in')
 
 class RunningPynacTest(unittest.TestCase):

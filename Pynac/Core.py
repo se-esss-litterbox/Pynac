@@ -22,12 +22,11 @@ import Pynac.Plotting as pynplt
 
 
 class Pynac(object):
-    '''
+    """
     The primary entry point for performing simulations.  Objects of this class
     contain all the necessary information to perform a Dynac simulation, as well
     as methods to manipulate the lattice, and to make the call to Dynac.
-
-    '''
+    """
     _DEBUG = False
     _fieldData = {
         'INPUT': 2,
@@ -75,15 +74,15 @@ class Pynac(object):
         return pyn
 
     def run(self):
-        '''
+        """
         Run the simulation in the current directory.
-        '''
-        self._startDynacProc(stdin=subp.PIPE, stdout=subp.PIPE)
+        """
+        self._start_dynac_proc(stdin=subp.PIPE, stdout=subp.PIPE)
         str2write = self.name + '\r\n'
         if self._DEBUG:
             with open('pynacrun.log', 'a') as f:
                 f.write(str2write)
-        self.dynacProc.stdin.write(str2write.encode()) # The name field
+        self.dynacProc.stdin.write(str2write.encode())  # The name field
         for pynEle in self.lattice:
             try:
                 ele = pynEle.dynacRepresentation()
@@ -110,36 +109,36 @@ class Pynac(object):
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
 
-    def getXinds(self, *X):
-        '''
+    def get_x_inds(self, *X):
+        """
         Return the indices into the lattice list attribute of elements whose Dynac
         type matches the input string.  Multiple input strings can be given, either
         as a comma-separated list or as a genuine Python list.
-        '''
+        """
         return [i for i,x in enumerate(self.lattice) for y in X if dynac_from_ele(x) == y]
 
-    def getPlotInds(self):
-        '''
+    def get_plot_inds(self):
+        """
         Return the indices into the lattice list attribute of elements that result
         in Dynac plot output.
-        '''
-        return self.getXinds('EMITGR','ENVEL','PROFGR')
+        """
+        return self.get_x_inds('EMITGR', 'ENVEL', 'PROFGR')
 
-    def getNumPlots(self):
-        '''
+    def get_num_plots(self):
+        """
         Return the number of Dynac plots that will be output when Dynac is run.
-        '''
-        return len(self.getPlotInds()) + 2 * len(self.getXinds('ENVEL'))
+        """
+        return len(self.get_plot_inds()) + 2 * len(self.get_x_inds('ENVEL'))
 
-    def setNewRDBEAMfile(self, filename):
-        '''
+    def set_new_rdbeam_file(self, filename):
+        """
         Change the current ``RDBEAM`` command to point at another Dynac input file.
         This will raise an IndexError if the lattice doesn't contain an RDBEAM
         command.
-        '''
-        self.lattice[self.getXinds('RDBEAM')[0]][1][0][0] = filename
+        """
+        self.lattice[self.get_x_inds('RDBEAM')[0]][1][0][0] = filename
 
-    def _startDynacProc(self, stdin, stdout):
+    def _start_dynac_proc(self, stdin, stdout):
         # self.dynacProc = subp.Popen(['dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
         self.dynacProc = subp.Popen(
             ['dynacv6_0','--pipe'],
@@ -163,25 +162,25 @@ class Pynac(object):
         ind = 1
         while ind < len(self.rawData):
             if not (self.rawData[ind] == '' or self.rawData[ind][0] == ';'):
-                ind = self._parsedChunk(ind)
+                ind = self._parsed_chunk(ind)
                 if self._DEBUG:
                     print(self.lattice[-1])
             ind += 1
 
-    def _parsedChunk(self, currentInd):
-        dynacStr = self.rawData[currentInd]
+    def _parsed_chunk(self, currentInd):
+        dynac_str = self.rawData[currentInd]
         try:
-            numFields = self._fieldData[dynacStr]
+            num_fields = self._fieldData[dynac_str]
         except KeyError:
-            if dynacStr == 'GEBEAM':
-                numFields = self._getNumFieldsFromiTwiss(currentInd)
-            elif dynacStr == 'SCDYNAC':
-                numFields = self._getNumFieldsFromISCSP(currentInd)
+            if dynac_str == 'GEBEAM':
+                num_fields = self._getNumFieldsFromiTwiss(currentInd)
+            elif dynac_str == 'SCDYNAC':
+                num_fields = self._getNumFieldsFromISCSP(currentInd)
             else:
-                numFields = 1
-        dataStr = [self.rawData[currentInd+i+1] for i in range(numFields)]
+                num_fields = 1
+        data_str = [self.rawData[currentInd+i+1] for i in range(num_fields)]
         dat = []
-        for term in dataStr:
+        for term in data_str:
             try:
                 if self._mightBeNumber(term):
                     dat.append([float(term)])
@@ -192,8 +191,8 @@ class Pynac(object):
                     dat.append([float(i) if self._mightBeNumber(i) else int(i) for i in term.split(' ')])
                 except ValueError:
                     dat.append([term])
-        self.lattice.append(ele_from_pynac([dynacStr, dat]))
-        return currentInd + numFields
+        self.lattice.append(ele_from_pynac([dynac_str, dat]))
+        return currentInd + num_fields
 
     def _getNumFieldsFromiTwiss(self, ind):
         iTwiss = self.rawData[ind+1].split()[1]
@@ -545,10 +544,10 @@ class Builder:
         loadLatticeBtn.on_click(loadLattice_click)
 
         def addBuiltBeam_click(b):
-            beamInds = self.sim.getXinds('RDBEAM')
-            beamInds += self.sim.getXinds('REFCOG')
-            beamInds += self.sim.getXinds('INPUT')
-            beamInds += self.sim.getXinds('GEBEAM')
+            beamInds = self.sim.get_x_inds('RDBEAM')
+            beamInds += self.sim.get_x_inds('REFCOG')
+            beamInds += self.sim.get_x_inds('INPUT')
+            beamInds += self.sim.get_x_inds('GEBEAM')
             beamInds = sorted(beamInds, reverse=True)
             for ele in beamInds:
                 del self.sim.lattice[ele]
@@ -605,7 +604,7 @@ class PhaseSpace:
             KE=Param(val=float(self.dataStrMatrix[0][3]), unit='MeV'),
             TOF=Param(val=float(self.dataStrMatrix[0][4]), unit='deg'),
         )
-        self.particlesLeft = Param(val = float(self.dataStrMatrix[4][5]), unit = 'num')
+        self.particlesLeft = Param(val=float(self.dataStrMatrix[4][5]), unit='num')
 
     def _get_ps_from_line(self, num):
         try:

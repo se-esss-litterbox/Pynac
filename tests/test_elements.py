@@ -9,20 +9,20 @@ class ElementManipulationTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
     def test_scaleQuad(self):
-        quadinds = self.pynacInstance.getXinds('QUADRUPO')
+        quadinds = self.pynacInstance.get_x_inds('QUADRUPO')
         quad = self.pynacInstance.lattice[quadinds[0]]
         quad.scaleField(0)
         self.assertEqual(quad.B.val, 0)
 
     def test_scaleCav(self):
-        cavinds = self.pynacInstance.getXinds('CAVMC')
+        cavinds = self.pynacInstance.get_x_inds('CAVMC')
         cav = self.pynacInstance.lattice[cavinds[0]]
         cav.scaleField(0)
         self.assertEqual(cav.fieldReduction.val, -100)
 
     def test_adjustPhase(self):
         adjustBy = 10
-        cavinds = self.pynacInstance.getXinds('CAVMC')
+        cavinds = self.pynacInstance.get_x_inds('CAVMC')
         cav = self.pynacInstance.lattice[cavinds[0]]
         originalPhase = cav.phase
         newPhase = ele.Param(val = originalPhase.val + adjustBy, unit = originalPhase.unit)

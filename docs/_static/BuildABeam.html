@@ -11778,7 +11778,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Interactive-Pynac----Beam-Generation">Interactive Pynac -- Beam Generation<a class="anchor-link" href="#Interactive-Pynac----Beam-Generation">&#182;</a></h1><p>Using Pynac in a Jupyter notebook gives the ability to interactively vary parameters, while observing the effect of those changes.  In this notebook, we use Pynac.Core.buildABeam() to allow exploration of the effect of varying the Twiss parameters on the distribution of a Gaussian beam.  In addition to showing the three standard phase-space plots, the inputs to Dynac and Pynac are also displayed, thereby allowing copy'n'pasting into your own simulations.</p>
+<h1 id="Interactive-Pynac----Beam-Generation">Interactive Pynac -- Beam Generation<a class="anchor-link" href="#Interactive-Pynac----Beam-Generation">&#182;</a></h1><p>Using Pynac in a Jupyter notebook gives the ability to interactively vary parameters, while observing the effect of those changes.  In this notebook, we use Pynac.Core.build_a_beam() to allow exploration of the effect of varying the Twiss parameters on the distribution of a Gaussian beam.  In addition to showing the three standard phase-space plots, the inputs to Dynac and Pynac are also displayed, thereby allowing copy'n'pasting into your own simulations.</p>
 
 </div>
 </div>
@@ -11788,11 +11788,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">Pynac.Core</span> <span class="k">import</span> <span class="n">buildABeam</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">Pynac.Core</span> <span class="k">import</span> <span class="n">build_a_beam</span>
 <span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
 <span class="n">output_notebook</span><span class="p">()</span>
 
-<span class="n">buildABeam</span><span class="p">()</span>
+<span class="n">build_a_beam</span><span class="p">()</span>
 </pre></div>
 
 </div>

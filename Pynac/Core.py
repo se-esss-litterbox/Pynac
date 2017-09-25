@@ -173,32 +173,32 @@ class Pynac(object):
             num_fields = self._fieldData[dynac_str]
         except KeyError:
             if dynac_str == 'GEBEAM':
-                num_fields = self._getNumFieldsFromiTwiss(currentInd)
+                num_fields = self._get_num_fields_from_itwiss(currentInd)
             elif dynac_str == 'SCDYNAC':
-                num_fields = self._getNumFieldsFromISCSP(currentInd)
+                num_fields = self._get_num_fields_from_iscsp(currentInd)
             else:
                 num_fields = 1
         data_str = [self.rawData[currentInd+i+1] for i in range(num_fields)]
         dat = []
         for term in data_str:
             try:
-                if self._mightBeNumber(term):
+                if self._might_be_number(term):
                     dat.append([float(term)])
                 else:
                     dat.append([int(term)])
             except ValueError:
                 try:
-                    dat.append([float(i) if self._mightBeNumber(i) else int(i) for i in term.split(' ')])
+                    dat.append([float(i) if self._might_be_number(i) else int(i) for i in term.split(' ')])
                 except ValueError:
                     dat.append([term])
         self.lattice.append(ele_from_pynac([dynac_str, dat]))
         return currentInd + num_fields
 
-    def _getNumFieldsFromiTwiss(self, ind):
-        iTwiss = self.rawData[ind+1].split()[1]
-        return {'1': 6, '0': 4}[iTwiss]
+    def _get_num_fields_from_itwiss(self, ind):
+        i_twiss = self.rawData[ind+1].split()[1]
+        return {'1': 6, '0': 4}[i_twiss]
 
-    def _getNumFieldsFromISCSP(self, ind):
+    def _get_num_fields_from_iscsp(self, ind):
         iscsp = self.rawData[ind+1]
         return {
             '1': 3,
@@ -207,7 +207,7 @@ class Pynac(object):
             '3': 3 if self.rawData[ind+3]=='0' else 4
         }[iscsp]
 
-    def _mightBeNumber(self, thing):
+    def _might_be_number(self, thing):
         return ('.' in thing) or ('e' in thing) or ('E' in thing)
 
 
@@ -216,156 +216,156 @@ class Builder:
         self.inputBeamLattice = None
         self.firstPlotDone = False
 
-    def buildABeam(self):
-        betaX = widgets.FloatSlider(
+    def build_a_beam(self):
+        beta_x = widgets.FloatSlider(
             value=7.5,
             min=0.01,
             max=20.0,
             step=0.01,
-            description='betaX:',
+            description='beta_x:',
             disabled=False,
             continuous_update=False,
         )
-        alphaX = widgets.FloatSlider(
+        alpha_x = widgets.FloatSlider(
             value=0.0,
             min=-5.0,
             max=5.0,
             step=0.01,
-            description='alphaX:',
+            description='alpha_x:',
             disabled=False,
             continuous_update=False,
         )
-        emitX = widgets.FloatSlider(
+        emit_x = widgets.FloatSlider(
             value=0.5,
             min=0.01,
             max=10.0,
             step=0.01,
-            description='emitX:',
+            description='emit_x:',
             disabled=False,
             continuous_update=False,
         )
-        betaY = widgets.FloatSlider(
+        beta_y = widgets.FloatSlider(
             value=7.5,
             min=0.01,
             max=20.0,
             step=0.01,
-            description='betaY:',
+            description='beta_y:',
             disabled=False,
             continuous_update=False,
         )
-        alphaY = widgets.FloatSlider(
+        alpha_y = widgets.FloatSlider(
             value=0.0,
             min=-5.0,
             max=5.0,
             step=0.01,
-            description='alphaY:',
+            description='alpha_y:',
             disabled=False,
             continuous_update=False,
         )
-        emitY = widgets.FloatSlider(
+        emit_y = widgets.FloatSlider(
             value=0.5,
             min=0.01,
             max=10.0,
             step=0.01,
-            description='emitY:',
+            description='emit_y:',
             disabled=False,
             continuous_update=False,
         )
-        betaZ = widgets.FloatSlider(
+        beta_z = widgets.FloatSlider(
             value=7.5,
             min=0.01,
             max=20.0,
             step=0.01,
-            description='betaZ:',
+            description='beta_z:',
             disabled=False,
             continuous_update=False,
         )
-        alphaZ = widgets.FloatSlider(
+        alpha_z = widgets.FloatSlider(
             value=0.0,
             min=-5.0,
             max=5.0,
             step=0.01,
-            description='alphaZ:',
+            description='alpha_z:',
             disabled=False,
             continuous_update=False,
         )
-        emitZ = widgets.FloatSlider(
+        emit_z = widgets.FloatSlider(
             value=500,
             min=1.0,
             max=1000.0,
             step=1.0,
-            description='emitZ:',
+            description='emit_z:',
             disabled=False,
             continuous_update=False,
         )
 
         label_layout = widgets.Layout(width='100%')
-        twissXLabel = widgets.Label(value = "Horizontal Twiss", layout = label_layout)
-        twissYLabel = widgets.Label(value = "Vertical Twiss", layout = label_layout)
-        twissZLabel = widgets.Label(value = "Longitudinal Twiss", layout = label_layout)
+        twiss_x_label = widgets.Label(value="Horizontal Twiss", layout=label_layout)
+        twiss_y_label = widgets.Label(value="Vertical Twiss", layout=label_layout)
+        twiss_z_label = widgets.Label(value="Longitudinal Twiss", layout=label_layout)
 
-        energyOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
-        xOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
-        xpOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
-        yOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
-        ypOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
-        phaseOffset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        energy_offset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        x_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
+        xp_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
+        y_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
+        yp_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
+        phase_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
 
-        energyOffsetLabel = widgets.Label(value = "Energy Offset (MeV):", layout = label_layout)
-        xOffsetLabel = widgets.Label(value = "x Offset (cm):", layout = label_layout)
-        xpOffsetLabel = widgets.Label(value = "xp Offset (mrad):", layout = label_layout)
-        yOffsetLabel = widgets.Label(value = "y Offset (cm):", layout = label_layout)
-        ypOffsetLabel = widgets.Label(value = "yp Offset (mrad):", layout = label_layout)
-        phaseOffsetLabel = widgets.Label(value = "Phase Offset (s):", layout = label_layout)
+        energy_offset_label = widgets.Label(value="Energy Offset (MeV):", layout=label_layout)
+        x_offset_label = widgets.Label(value="x Offset (cm):", layout=label_layout)
+        xp_offset_label = widgets.Label(value="xp Offset (mrad):", layout=label_layout)
+        y_offset_label = widgets.Label(value="y Offset (cm):", layout=label_layout)
+        yp_offset_label = widgets.Label(value="yp Offset (mrad):", layout=label_layout)
+        phase_offset_label = widgets.Label(value="Phase Offset (s):", layout=label_layout)
 
-        beamFreq = widgets.IntText(value = 352.21e6, display='flex', flex_basis='20%')
-        bunchPopulation = widgets.IntText(value = 1000, display='flex', flex_basis='20%')
-        self.bunchPopulation = bunchPopulation
+        beam_freq = widgets.IntText(value = 352.21e6, display='flex', flex_basis='20%')
+        bunch_population = widgets.IntText(value = 1000, display='flex', flex_basis='20%')
+        self.bunchPopulation = bunch_population
 
-        beamFreqLabel = widgets.Label(value = "Beam Freq (Hz):", layout = label_layout)
-        bunchPopulationLabel = widgets.Label(value = "Bunch pop.:", layout = label_layout)
+        beam_freq_label = widgets.Label(value = "Beam Freq (Hz):", layout = label_layout)
+        bunch_population_label = widgets.Label(value = "Bunch pop.:", layout = label_layout)
 
-        restMass = widgets.FloatText(value = 938.27231, display='flex', flex_basis='20%')
-        atomicNum = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
+        rest_mass = widgets.FloatText(value = 938.27231, display='flex', flex_basis='20%')
+        atomic_num = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
         charge = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
 
-        restMassLabel = widgets.Label(value = "Rest mass (MeV/c^2):", layout = label_layout)
-        atomicNumLabel = widgets.Label(value = "Atomic Number:", layout = label_layout)
-        chargeLabel = widgets.Label(value = "Particle Charge:", layout = label_layout)
+        rest_mass_label = widgets.Label(value = "Rest mass (MeV/c^2):", layout = label_layout)
+        atomic_num_label = widgets.Label(value = "Atomic Number:", layout = label_layout)
+        charge_label = widgets.Label(value = "Particle Charge:", layout = label_layout)
 
-        def getPynacInput():
+        def get_pynac_input():
             beam = ['GEBEAM', [
                 [4, 1],
-                [beamFreq.value, bunchPopulation.value],
-                [energyOffset.value, xOffset.value, xpOffset.value, yOffset.value, ypOffset.value, phaseOffset.value],
-                [alphaX.value, betaX.value, emitX.value],
-                [alphaY.value, betaY.value, emitY.value],
-                [alphaZ.value, betaZ.value, emitZ.value],
+                [beam_freq.value, bunch_population.value],
+                [energy_offset.value, x_offset.value, xp_offset.value, y_offset.value, yp_offset.value, phase_offset.value],
+                [alpha_x.value, beta_x.value, emit_x.value],
+                [alpha_y.value, beta_y.value, emit_y.value],
+                [alpha_z.value, beta_z.value, emit_z.value],
             ]]
             return beam
 
-        def getDynacInput():
+        def get_dynac_input():
             beam = 'GEBEAM\r\n'
             beam += '4 1\r\n'
-            beam += '%e %d\r\n' % (beamFreq.value, bunchPopulation.value)
-            beam += '%f %f %f %f %f %f\r\n' % (energyOffset.value, xOffset.value, xpOffset.value, yOffset.value, ypOffset.value, phaseOffset.value)
-            beam += '%f %f %f\r\n' % (alphaX.value, betaX.value, emitX.value)
-            beam += '%f %f %f\r\n' % (alphaY.value, betaY.value, emitY.value)
-            beam += '%f %f %f' % (alphaZ.value, betaZ.value, emitZ.value)
+            beam += '%e %d\r\n' % (beam_freq.value, bunch_population.value)
+            beam += '%f %f %f %f %f %f\r\n' % (energy_offset.value, x_offset.value, xp_offset.value, y_offset.value, yp_offset.value, phase_offset.value)
+            beam += '%f %f %f\r\n' % (alpha_x.value, beta_x.value, emit_x.value)
+            beam += '%f %f %f\r\n' % (alpha_y.value, beta_y.value, emit_y.value)
+            beam += '%f %f %f' % (alpha_z.value, beta_z.value, emit_z.value)
             return beam
 
-        cssHeightStr = '170px'
-        viewBtn = widgets.Button(description="View Pynac Input")
-        pynacViewArea = widgets.Textarea()
-        pynacViewArea.layout.height = cssHeightStr
-        dynacViewArea = widgets.Textarea()
-        dynacViewArea.layout.height = cssHeightStr
+        css_height_str = '170px'
+        view_btn = widgets.Button(description="View Pynac Input")
+        pynac_view_area = widgets.Textarea()
+        pynac_view_area.layout.height = css_height_str
+        dynac_view_area = widgets.Textarea()
+        dynac_view_area.layout.height = css_height_str
 
-        pynacViewArea.value = getPynacInput().__str__()
-        dynacViewArea.value = getDynacInput()
+        pynac_view_area.value = get_pynac_input().__str__()
+        dynac_view_area.value = get_dynac_input()
 
         self.inputBeamLattice = []
-        self.inputBeamLattice.append(getPynacInput())
+        self.inputBeamLattice.append(get_pynac_input())
         self.inputBeamLattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
         self.inputBeamLattice.append(['REFCOG', [[0]]])
         self.inputBeamLattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
@@ -377,9 +377,9 @@ class Builder:
         with open('emit.plot') as f:
             for i in range(204):
                 f.readline()
-            numParts = int(f.readline())
+            num_parts = int(f.readline())
             x, xp = [], []
-            for i in range(numParts):
+            for i in range(num_parts):
                 dat = f.readline().split()
                 x.append(float(dat[0]))
                 xp.append(float(dat[1]))
@@ -387,7 +387,7 @@ class Builder:
             for i in range(202):
                 f.readline()
             y, yp = [], []
-            for i in range(numParts):
+            for i in range(num_parts):
                 dat = f.readline().split()
                 y.append(float(dat[0]))
                 yp.append(float(dat[1]))
@@ -395,27 +395,27 @@ class Builder:
             for i in range(203):
                 f.readline()
             z, zp = [], []
-            for i in range(numParts):
+            for i in range(num_parts):
                 dat = f.readline().split()
                 z.append(float(dat[0]))
                 zp.append(float(dat[1]))
 
-        dataSource = ColumnDataSource(data=dict(x=x, xp=xp, y=y, yp=yp, z=z, zp=zp))
+        data_source = ColumnDataSource(data=dict(x=x, xp=xp, y=y, yp=yp, z=z, zp=zp))
 
         p0 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
         p0.xaxis.axis_label = 'Horizontal position'
         p0.yaxis.axis_label = 'Horizontal angle'
-        p0.circle('x', 'xp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource)
+        p0.circle('x', 'xp', color="#2222aa", alpha=0.5, line_width=2, source=data_source)
 
         p1 = figure(plot_height=250, plot_width=296, y_range=(-5, 5), x_range=(-1, 1))
         p1.xaxis.axis_label = 'Vertical position'
         p1.yaxis.axis_label = 'Vertical angle'
-        p1.circle('y', 'yp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+        p1.circle('y', 'yp', color="#2222aa", alpha=0.5, line_width=2, source=data_source, name="foo")
 
         p2 = figure(plot_height=250, plot_width=296, y_range=(-0.1, 0.1), x_range=(-150, 150))
         p2.xaxis.axis_label = 'Longitudinal phase'
         p2.yaxis.axis_label = 'Longitudinal energy'
-        p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=dataSource, name="foo")
+        p2.circle('z', 'zp', color="#2222aa", alpha=0.5, line_width=2, source=data_source, name="foo")
 
         grid = gridplot([[p0, p1, p2]])
         self.beamBuilderPlotHandle = show(grid, notebook_handle=True)
@@ -423,18 +423,18 @@ class Builder:
         push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
 
         def on_button_clicked(b):
-            pynacViewArea.value = getPynacInput().__str__()
-            dynacViewArea.value = getDynacInput()
-            self.inputBeamLattice[0] = getPynacInput()
+            pynac_view_area.value = get_pynac_input().__str__()
+            dynac_view_area.value = get_dynac_input()
+            self.inputBeamLattice[0] = get_pynac_input()
             self.inputBeamLattice[0][1][1][1] = 1000
-            test = Pynac.from_lattice("Zero-length lattice for beam generation", self.inputBeamLattice)
-            test.run()
+            zero_length_lattice = Pynac.from_lattice("Zero-length lattice for beam generation", self.inputBeamLattice)
+            zero_length_lattice.run()
             with open('emit.plot') as f:
                 for i in range(204):
                     f.readline()
-                numParts = int(f.readline())
+                num_parts = int(f.readline())
                 x, xp = [], []
-                for i in range(numParts):
+                for i in range(num_parts):
                     dat = f.readline().split()
                     x.append(float(dat[0]))
                     xp.append(float(dat[1]))
@@ -442,7 +442,7 @@ class Builder:
                 for i in range(202):
                     f.readline()
                 y, yp = [], []
-                for i in range(numParts):
+                for i in range(num_parts):
                     dat = f.readline().split()
                     y.append(float(dat[0]))
                     yp.append(float(dat[1]))
@@ -450,39 +450,39 @@ class Builder:
                 for i in range(203):
                     f.readline()
                 z, zp = [], []
-                for i in range(numParts):
+                for i in range(num_parts):
                     dat = f.readline().split()
                     z.append(float(dat[0]))
                     zp.append(float(dat[1]))
-            dataSource.data['x'] = x
-            dataSource.data['xp'] = xp
-            dataSource.data['y'] = y
-            dataSource.data['yp'] = yp
-            dataSource.data['z'] = z
-            dataSource.data['zp'] = zp
+            data_source.data['x'] = x
+            data_source.data['xp'] = xp
+            data_source.data['y'] = y
+            data_source.data['yp'] = yp
+            data_source.data['z'] = z
+            data_source.data['zp'] = zp
             push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
 
-        activeWidgetList = [betaX, alphaX, emitX, betaY, alphaY, emitY, betaZ, alphaZ, emitZ,
-            energyOffset, xOffset, xpOffset, yOffset, ypOffset, phaseOffset,
-            beamFreq, bunchPopulation, restMass, atomicNum, charge
-        ]
-        for slider in activeWidgetList:
+        active_widget_list = [beta_x, alpha_x, emit_x, beta_y, alpha_y, emit_y, beta_z, alpha_z, emit_z,
+                              energy_offset, x_offset, xp_offset, y_offset, yp_offset, phase_offset,
+                              beam_freq, bunch_population, rest_mass, atomic_num, charge
+                              ]
+        for slider in active_widget_list:
             slider.observe(on_button_clicked)
 
-        pynacBoxLabel = widgets.Label(value = "Pynac Input", layout = label_layout)
-        dynacBoxLabel = widgets.Label(value = "Dynac Input", layout = label_layout)
+        pynac_box_label = widgets.Label(value = "Pynac Input", layout = label_layout)
+        dynac_box_label = widgets.Label(value = "Dynac Input", layout = label_layout)
 
-        twissControls = HBox([
-                VBox([twissXLabel, betaX, alphaX, emitX]),
-                VBox([twissYLabel, betaY, alphaY, emitY]),
-                VBox([twissZLabel, betaZ, alphaZ, emitZ]),
+        twiss_controls = HBox([
+                VBox([twiss_x_label, beta_x, alpha_x, emit_x]),
+                VBox([twiss_y_label, beta_y, alpha_y, emit_y]),
+                VBox([twiss_z_label, beta_z, alpha_z, emit_z]),
             ])
-        colLayout = Layout(display='flex', flex_flow='column', align_items='stretch')
-        otherControls = Box([
-                Box([restMassLabel, atomicNumLabel, chargeLabel, beamFreqLabel, bunchPopulationLabel], layout=colLayout),
-                Box([restMass, atomicNum, charge, beamFreq, bunchPopulation], layout=colLayout),
-                Box([energyOffsetLabel, xOffsetLabel, xpOffsetLabel, yOffsetLabel, ypOffsetLabel, phaseOffsetLabel], layout=colLayout),
-                Box([energyOffset, xOffset, xpOffset, yOffset, ypOffset, phaseOffset], layout=colLayout),
+        col_layout = Layout(display='flex', flex_flow='column', align_items='stretch')
+        other_controls = Box([
+                Box([rest_mass_label, atomic_num_label, charge_label, beam_freq_label, bunch_population_label], layout=col_layout),
+                Box([rest_mass, atomic_num, charge, beam_freq, bunch_population], layout=col_layout),
+                Box([energy_offset_label, x_offset_label, xp_offset_label, y_offset_label, yp_offset_label, phase_offset_label], layout=col_layout),
+                Box([energy_offset, x_offset, xp_offset, y_offset, yp_offset, phase_offset], layout=col_layout),
             ], layout=Layout(
                     display='flex',
                     flex_flow='row',
@@ -490,60 +490,60 @@ class Builder:
                     width='100%'
         ))
 
-        inputText = HBox([
-                VBox([pynacBoxLabel, pynacViewArea]),
-                VBox([dynacBoxLabel, dynacViewArea])
+        input_text = HBox([
+                VBox([pynac_box_label, pynac_view_area]),
+                VBox([dynac_box_label, dynac_view_area])
             ])
 
-        accordion = widgets.Accordion(children = [twissControls, otherControls, inputText])
+        accordion = widgets.Accordion(children = [twiss_controls, other_controls, input_text])
         accordion.set_title(0, 'Twiss (to alter the phase-space plots)')
         accordion.set_title(1, 'Beam details (will not alter the phase-space plots)')
         accordion.set_title(2, "Pynac/Dynac input (to copy'n'paste into your own files)")
         display(accordion)
 
-    def runSimulation(self):
+    def run_simulation(self):
         self.sim = None
 
-        loadLatticeBtn = widgets.Button(
+        load_lattice_btn = widgets.Button(
             description="Load lattice file",
             button_style='success',
             disabled=False,
         )
-        addBuiltBeam = widgets.Button(
+        add_built_beam = widgets.Button(
             description="Add new beam",
             button_style='',
             disabled=True,
         )
-        self.addBuiltBeam = addBuiltBeam
-        runSimBtn = widgets.Button(
+        self.addBuiltBeam = add_built_beam
+        run_sim_btn = widgets.Button(
             description="Run simulation",
             button_style='',
             disabled=True,
         )
-        plotBtn = widgets.Button(
+        plot_btn = widgets.Button(
             description="Plot!",
             button_style='',
             disabled=True,
         )
-        plotitBtn = widgets.Button(
+        plotit_btn = widgets.Button(
             description="Dynac-style plotit",
             button_style='',
             disabled=True,
         )
 
-        buttons = HBox([loadLatticeBtn, addBuiltBeam, runSimBtn, plotitBtn])
+        buttons = HBox([load_lattice_btn, add_built_beam, run_sim_btn, plotit_btn])
         display(buttons)
 
-        def loadLattice_click(b):
+        def load_lattice_click(_):
             self.sim = Pynac('ESS_with_SC_ana.in')
             if self.inputBeamLattice:
-                addBuiltBeam.disabled = False
-                addBuiltBeam.button_style = 'warning'
-            runSimBtn.disabled = False
-            runSimBtn.button_style = 'danger'
-        loadLatticeBtn.on_click(loadLattice_click)
+                add_built_beam.disabled = False
+                add_built_beam.button_style = 'warning'
+            run_sim_btn.disabled = False
+            run_sim_btn.button_style = 'danger'
+        load_lattice_btn.on_click(load_lattice_click)
 
-        def addBuiltBeam_click(b):
+        def add_built_beam_click(_):
             beamInds = self.sim.get_x_inds('RDBEAM')
             beamInds += self.sim.get_x_inds('REFCOG')
             beamInds += self.sim.get_x_inds('INPUT')
@@ -552,17 +552,17 @@ class Builder:
             for ele in beamInds:
                 del self.sim.lattice[ele]
             self.sim.lattice = self.inputBeamLattice[:3] + self.sim.lattice
-        addBuiltBeam.on_click(addBuiltBeam_click)
+        add_built_beam.on_click(add_built_beam_click)
 
-        def runSim_click(b):
-            plotitBtn.disabled = True
-            plotitBtn.button_style = ''
+        def run_sim_click(_):
+            plotit_btn.disabled = True
+            plotit_btn.button_style = ''
             self.sim.run()
-            plotitBtn.disabled = False
-            plotitBtn.button_style = 'warning'
-        runSimBtn.on_click(runSim_click)
+            plotit_btn.disabled = False
+            plotit_btn.button_style = 'warning'
+        run_sim_btn.on_click(run_sim_click)
 
-        def plotitBtn_click(b):
+        def plotit_btn_click(_):
             if not self.firstPlotDone:
                 self.plotitTool = pynplt.NewPynPlt()
                 self.plotitTool.parseAndOrganise()
@@ -579,7 +579,7 @@ class Builder:
                 #     push_notebook(handle=p)
                 # for p in self.plotitTool.plotHandleDict['profgrHandle']:
                 #     push_notebook(handle=p)
-        plotitBtn.on_click(plotitBtn_click)
+        plotit_btn.on_click(plotit_btn_click)
 
 
 class PhaseSpace:
@@ -597,9 +597,9 @@ class PhaseSpace:
         self.yPhaseSpace = self._get_ps_from_line(6)
         self.zPhaseSpace = self._get_ps_from_line(4)
         self.COG = CentreOfGravity(
-            x= Param(val=float(self.dataStrMatrix[1][0]), unit='mm'),
+            x=Param(val=float(self.dataStrMatrix[1][0]), unit='mm'),
             xp=Param(val=float(self.dataStrMatrix[1][1]), unit='mrad'),
-            y= Param(val=float(self.dataStrMatrix[1][2]), unit='mm'),
+            y=Param(val=float(self.dataStrMatrix[1][2]), unit='mm'),
             yp=Param(val=float(self.dataStrMatrix[1][3]), unit='mrad'),
             KE=Param(val=float(self.dataStrMatrix[0][3]), unit='MeV'),
             TOF=Param(val=float(self.dataStrMatrix[0][4]), unit='deg'),
@@ -610,11 +610,11 @@ class PhaseSpace:
         try:
             test = float(self.dataStrMatrix[num][6])
             return SingleDimPS(
-                pos=Param(val = float(self.dataStrMatrix[num][0]), unit='mm'),
-                mom=Param(val = float(self.dataStrMatrix[num][1]), unit='mrad'),
-                R12=Param(val = float(self.dataStrMatrix[num][2]), unit='?'),
-                normEmit=Param(val = float(self.dataStrMatrix[num][3]), unit='mm.mrad'),
-                nonNormEmit=Param(val = float(self.dataStrMatrix[num][6]), unit='mm.mrad'),
+                pos=Param(val=float(self.dataStrMatrix[num][0]), unit='mm'),
+                mom=Param(val=float(self.dataStrMatrix[num][1]), unit='mrad'),
+                R12=Param(val=float(self.dataStrMatrix[num][2]), unit='?'),
+                normEmit=Param(val=float(self.dataStrMatrix[num][3]), unit='mm.mrad'),
+                nonNormEmit=Param(val=float(self.dataStrMatrix[num][6]), unit='mm.mrad'),
             )
         except IndexError:
             return SingleDimPS(
@@ -622,7 +622,7 @@ class PhaseSpace:
                 pos=Param(val=float(self.dataStrMatrix[num][0]), unit='deg'),
                 R12=Param(val=float(self.dataStrMatrix[num][2]), unit='?'),
                 normEmit=Param(val=float(self.dataStrMatrix[num][3]), unit='keV.ns'),
-                nonNormEmit=Param(val = None, unit = None),
+                nonNormEmit=Param(val=None, unit=None),
             )
 
     def __repr__(self):

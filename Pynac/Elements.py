@@ -1,7 +1,7 @@
-'''
+"""
 Accelerator elements, including methods for their manipulation and conversion to
 the representation expected by Dynac.
-'''
+"""
 
 from Pynac.DataClasses import Param
 from collections import defaultdict
@@ -16,14 +16,15 @@ _dynac2pynac = defaultdict(lambda: 'NotImplemented', {
     'FIELD': 'AccFieldFromFile',
 })
 
+
 class Quad:
-    '''
+    """
     A Pynac representation of a quadrupole magnet.
 
     Before the simulation is run, any changes made to elements using this class have to
     be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
     method.
-    '''
+    """
     def __init__(self, L, B, aperRadius):
         self.L = Param(val = L, unit = 'cm')
         self.B = Param(val = B, unit = 'kG')
@@ -31,26 +32,26 @@ class Quad:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        '''
+        """
         Construct a ``Quad`` instance from the Pynac lattice element
-        '''
+        """
         L = float(pynacRepr[1][0][0])
         B = float(pynacRepr[1][0][1])
         aperRadius = float(pynacRepr[1][0][2])
         return cls(L, B, aperRadius)
 
     def scaleField(self, scalingFactor):
-        '''
+        """
         Adjust the field of the magnet by the value of ``scalingFactor``.  The adjustment
         is multiplicative, so a value of ``scalingFactor = 1.0`` will result in no change
         of the field.
-        '''
+        """
         self.B = self.B._replace(val=self.B.val * scalingFactor)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Pynac representation of this quadrupole instance.
-        '''
+        """
         return ['QUADRUPO', [[self.L.val, self.B.val, self.aperRadius.val]]]
 
     def __repr__(self):
@@ -60,15 +61,16 @@ class Quad:
         s += ' | aperRadius = ' + self.aperRadius.__repr__()
         return s
 
+
 class CavityAnalytic:
-    '''
+    """
     A Pynac representation of a resonant EM cavity (i.e., the ``CAVMC`` model used by Dynac
     to do analytic calculations).
 
     Before the simulation is run, any changes made to elements using this class have to
     be put back into the ``lattice`` attribute of ``Pynac`` using the ``dynacRepresentation``
     method.
-    '''
+    """
     def __init__(self, phase, fieldReduction, cavID=0, xesln=0, isec=0):
         self.cavID = Param(val = cavID, unit = None)
         self.xesln = Param(val = xesln, unit = 'cm')
@@ -78,9 +80,9 @@ class CavityAnalytic:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        '''
+        """
         Construct a ``CavityAnalytic`` instance from the Pynac lattice element
-        '''
+        """
         cavID = int(pynacRepr[1][0][0])
         xesln = float(pynacRepr[1][1][0])
         phase = float(pynacRepr[1][1][1])
@@ -89,27 +91,27 @@ class CavityAnalytic:
         return cls(phase, fieldReduction, cavID, xesln, isec)
 
     def adjustPhase(self, adjustment):
-        '''
+        """
         Adjust the accelerating phase of the cavity by the value of ``adjustment``.
         The adjustment is additive, so a value of ``scalingFactor = 0.0`` will result
         in no change of the phase.
-        '''
+        """
         self.phase = self.phase._replace(val = self.phase.val + adjustment)
 
     def scaleField(self, scalingFactor):
-        '''
+        """
         Adjust the accelerating field of the cavity by the value of ``scalingFactor``.
         The adjustment is multiplicative, so a value of ``scalingFactor = 1.0`` will result
         in no change of the field.
-        '''
+        """
         oldField = self.fieldReduction.val
         newField = 100.0 * (scalingFactor * (1.0 + oldField/100.0) - 1.0)
         self.fieldReduction = self.fieldReduction._replace(val = newField)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Dynac representation of this cavity instance.
-        '''
+        """
         return ['CAVMC', [
             [self.cavID.val],
             [self.xesln.val, self.phase.val, self.fieldReduction.val, self.isec.val, 1],
@@ -121,29 +123,30 @@ class CavityAnalytic:
         s += ' | fieldReduction = ' + self.fieldReduction.__repr__()
         return s
 
+
 class Drift:
-    '''
+    """
     A Pynac representation of a drift.
 
     Before the simulation is run, any changes made to elements using this class have to
     be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
     method.
-    '''
+    """
     def __init__(self, L):
         self.L = Param(val = L, unit = 'cm')
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        '''
+        """
         Construct a ``Drift`` instance from the Pynac lattice element
-        '''
+        """
         L = float(pynacRepr[1][0][0])
         return cls(L)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Dynac representation of this drift instance.
-        '''
+        """
         return ['DRIFT', [[self.L.val]]]
 
     def __repr__(self):
@@ -151,14 +154,15 @@ class Drift:
         s += ' | L = ' + self.L.__repr__()
         return s
 
+
 class AccGap:
-    '''
+    """
     A Pynac representation of an accelerating gap.
 
     Before the simulation is run, any changes made to elements using this class have to
     be put back into the ``lattice`` attribute of `Pynac` using the ``dynacRepresentation``
     method.
-    '''
+    """
     def __init__(self, L, TTF, TTFprime, TTFprimeprime, EField, phase, F, atten):
         self.L = Param(val = L, unit = 'cm')
         self.TTF = Param(val = TTF, unit = None)
@@ -181,9 +185,9 @@ class AccGap:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        '''
+        """
         Construct a ``AccGap`` instance from the Pynac lattice element
-        '''
+        """
         pynacList = pynacRepr[1][0]
 
         L = float(pynacList[3])
@@ -208,9 +212,9 @@ class AccGap:
         return gap
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Dynac representation of this accelerating gap instance.
-        '''
+        """
         details = [
             self.gapID.val,
             self.energy.val,
@@ -239,6 +243,7 @@ class AccGap:
         s += ' | freq = ' + self.F.__repr__()
         return s
 
+
 class Set4DAperture:
     def __init__(self, energy, phase, x, y, radius, energyDefnFlag = 0):
         if energyDefnFlag == 1 or energyDefnFlag == 11:
@@ -254,9 +259,9 @@ class Set4DAperture:
 
     @classmethod
     def from_dynacRepr(cls, pynacRepr):
-        '''
+        """
         Construct a ``Set4DAperture`` instance from the Pynac lattice element
-        '''
+        """
         energyDefnFlag = int(pynacRepr[1][0][0])
         energy = float(pynacRepr[1][0][1])
         phase = float(pynacRepr[1][0][2])
@@ -267,9 +272,9 @@ class Set4DAperture:
         return cls(energy, phase, x, y, radius, energyDefnFlag)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Pynac representation of this Set4DAperture instance.
-        '''
+        """
         details = [
             self.energyDefnFlag.val,
             self.energy.val,
@@ -289,6 +294,7 @@ class Set4DAperture:
         s += ' | radius: ' + self.radius.__repr__()
         return s
 
+
 class Buncher:
     def __init__(self, voltage, phase, harmonicNum, apertureRadius):
         self.voltage = Param(val = voltage, unit = 'MV')
@@ -305,9 +311,9 @@ class Buncher:
         return cls(voltage, phase, harmonicNum, apertureRadius)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Pynac representation of this Set4DAperture instance.
-        '''
+        """
         details = [
             self.voltage.val,
             self.phase.val,
@@ -324,6 +330,7 @@ class Buncher:
         s += ' | Aperture: ' + self.apertureRadius.__repr__()
         return s
 
+
 class AccFieldFromFile:
     def __init__(self, filename, scaleFactor):
         self.filename = filename
@@ -336,9 +343,9 @@ class AccFieldFromFile:
         return cls(filename, scaleFactor)
 
     def dynacRepresentation(self):
-        '''
+        """
         Return the Pynac representation of this AccFieldFromFile instance.
-        '''
+        """
         return ['FIELD', [[self.filename], [self.scaleFactor.val]]]
 
     def __repr__(self):

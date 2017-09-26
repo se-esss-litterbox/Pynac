@@ -18,7 +18,7 @@ from bokeh.layouts import gridplot
 from bokeh.io import show, push_notebook, curdoc, curstate
 from Pynac.DataClasses import Param, SingleDimPS, CentreOfGravity
 import Pynac.Elements as pyEle
-import Pynac.Plotting as pynplt
+import Pynac.Plotting as pynPlt
 
 
 class Pynac(object):
@@ -109,13 +109,13 @@ class Pynac(object):
         if self.dynacProc.wait() != 0:
             raise RuntimeError("Errors occured during execution of Dynac")
 
-    def get_x_inds(self, *X):
+    def get_x_inds(self, *dynac_type):
         """
         Return the indices into the lattice list attribute of elements whose Dynac
         type matches the input string.  Multiple input strings can be given, either
         as a comma-separated list or as a genuine Python list.
         """
-        return [i for i,x in enumerate(self.lattice) for y in X if dynac_from_ele(x) == y]
+        return [i for i, x in enumerate(self.lattice) for y in dynac_type if dynac_from_ele(x) == y]
 
     def get_plot_inds(self):
         """
@@ -141,7 +141,7 @@ class Pynac(object):
     def _start_dynac_proc(self, stdin, stdout):
         # self.dynacProc = subp.Popen(['dynacv6_0','--pipe'], stdin=stdin, stdout=stdout)
         self.dynacProc = subp.Popen(
-            ['dynacv6_0','--pipe'],
+            ['dynacv6_0', '--pipe'],
             stdin=stdin,
             stdout=stdout,
             stderr=subp.PIPE
@@ -167,18 +167,18 @@ class Pynac(object):
                     print(self.lattice[-1])
             ind += 1
 
-    def _parsed_chunk(self, currentInd):
-        dynac_str = self.rawData[currentInd]
+    def _parsed_chunk(self, current_ind):
+        dynac_str = self.rawData[current_ind]
         try:
             num_fields = self._fieldData[dynac_str]
         except KeyError:
             if dynac_str == 'GEBEAM':
-                num_fields = self._get_num_fields_from_itwiss(currentInd)
+                num_fields = self._get_num_fields_from_itwiss(current_ind)
             elif dynac_str == 'SCDYNAC':
-                num_fields = self._get_num_fields_from_iscsp(currentInd)
+                num_fields = self._get_num_fields_from_iscsp(current_ind)
             else:
                 num_fields = 1
-        data_str = [self.rawData[currentInd+i+1] for i in range(num_fields)]
+        data_str = [self.rawData[current_ind + i + 1] for i in range(num_fields)]
         dat = []
         for term in data_str:
             try:
@@ -192,7 +192,7 @@ class Pynac(object):
                 except ValueError:
                     dat.append([term])
         self.lattice.append(ele_from_pynac([dynac_str, dat]))
-        return currentInd + num_fields
+        return current_ind + num_fields
 
     def _get_num_fields_from_itwiss(self, ind):
         i_twiss = self.rawData[ind+1].split()[1]
@@ -204,7 +204,7 @@ class Pynac(object):
             '1': 3,
             '-1': 6,
             '2': 3,
-            '3': 3 if self.rawData[ind+3]=='0' else 4
+            '3': 3 if self.rawData[ind+3] == '0' else 4
         }[iscsp]
 
     def _might_be_number(self, thing):
@@ -304,7 +304,7 @@ class Builder:
         twiss_y_label = widgets.Label(value="Vertical Twiss", layout=label_layout)
         twiss_z_label = widgets.Label(value="Longitudinal Twiss", layout=label_layout)
 
-        energy_offset = widgets.FloatText(value = 0.0, display='flex', width='20%')
+        energy_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
         x_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
         xp_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
         y_offset = widgets.FloatText(value=0.0, display='flex', width='20%')
@@ -318,26 +318,29 @@ class Builder:
         yp_offset_label = widgets.Label(value="yp Offset (mrad):", layout=label_layout)
         phase_offset_label = widgets.Label(value="Phase Offset (s):", layout=label_layout)
 
-        beam_freq = widgets.IntText(value = 352.21e6, display='flex', flex_basis='20%')
-        bunch_population = widgets.IntText(value = 1000, display='flex', flex_basis='20%')
+        beam_freq = widgets.IntText(value=352.21e6, display='flex', flex_basis='20%')
+        bunch_population = widgets.IntText(value=1000, display='flex', flex_basis='20%')
         self.bunchPopulation = bunch_population
 
-        beam_freq_label = widgets.Label(value = "Beam Freq (Hz):", layout = label_layout)
-        bunch_population_label = widgets.Label(value = "Bunch pop.:", layout = label_layout)
+        beam_freq_label = widgets.Label(value="Beam Freq (Hz):", layout=label_layout)
+        bunch_population_label = widgets.Label(value="Bunch pop.:", layout=label_layout)
 
-        rest_mass = widgets.FloatText(value = 938.27231, display='flex', flex_basis='20%')
-        atomic_num = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
-        charge = widgets.FloatText(value = 1, display='flex', flex_basis='20%')
+        rest_mass = widgets.FloatText(value=938.27231, display='flex', flex_basis='20%')
+        atomic_num = widgets.FloatText(value=1, display='flex', flex_basis='20%')
+        charge = widgets.FloatText(value=1, display='flex', flex_basis='20%')
 
-        rest_mass_label = widgets.Label(value = "Rest mass (MeV/c^2):", layout = label_layout)
-        atomic_num_label = widgets.Label(value = "Atomic Number:", layout = label_layout)
-        charge_label = widgets.Label(value = "Particle Charge:", layout = label_layout)
+        rest_mass_label = widgets.Label(value="Rest mass (MeV/c^2):", layout=label_layout)
+        atomic_num_label = widgets.Label(value="Atomic Number:", layout=label_layout)
+        charge_label = widgets.Label(value="Particle Charge:", layout=label_layout)
 
         def get_pynac_input():
             beam = ['GEBEAM', [
                 [4, 1],
                 [beam_freq.value, bunch_population.value],
-                [energy_offset.value, x_offset.value, xp_offset.value, y_offset.value, yp_offset.value, phase_offset.value],
+                [energy_offset.value, x_offset.value,
+                    xp_offset.value, y_offset.value,
+                    yp_offset.value, phase_offset.value,
+                 ],
                 [alpha_x.value, beta_x.value, emit_x.value],
                 [alpha_y.value, beta_y.value, emit_y.value],
                 [alpha_z.value, beta_z.value, emit_z.value],
@@ -348,7 +351,8 @@ class Builder:
             beam = 'GEBEAM\r\n'
             beam += '4 1\r\n'
             beam += '%e %d\r\n' % (beam_freq.value, bunch_population.value)
-            beam += '%f %f %f %f %f %f\r\n' % (energy_offset.value, x_offset.value, xp_offset.value, y_offset.value, yp_offset.value, phase_offset.value)
+            beam += '%f %f %f %f %f %f\r\n' % (energy_offset.value, x_offset.value, xp_offset.value,
+                                               y_offset.value, yp_offset.value, phase_offset.value)
             beam += '%f %f %f\r\n' % (alpha_x.value, beta_x.value, emit_x.value)
             beam += '%f %f %f\r\n' % (alpha_y.value, beta_y.value, emit_y.value)
             beam += '%f %f %f' % (alpha_z.value, beta_z.value, emit_z.value)
@@ -368,7 +372,11 @@ class Builder:
         self.inputBeamLattice.append(get_pynac_input())
         self.inputBeamLattice.append(['INPUT', [[938.27231, 1.0, 1.0], [3.6223537, 0.0]]])
         self.inputBeamLattice.append(['REFCOG', [[0]]])
-        self.inputBeamLattice.append(['EMITGR', [['Generated Beam'], [0, 9], [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]]])
+        self.inputBeamLattice.append(['EMITGR', [
+            ['Generated Beam'],
+            [0, 9],
+            [0.5, 80.0, 0.5, 80.0, 0.5, 0.5, 50.0, 1.0]
+        ]])
         self.inputBeamLattice.append(['STOP', []])
 
         test = Pynac.from_lattice("Zero-length lattice for beam generation", self.inputBeamLattice)
@@ -420,9 +428,9 @@ class Builder:
         grid = gridplot([[p0, p1, p2]])
         self.beamBuilderPlotHandle = show(grid, notebook_handle=True)
         self.beamBuilderPlotDoc = curdoc()
-        push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
+        push_notebook(document=self.beamBuilderPlotDoc, handle=self.beamBuilderPlotHandle)
 
-        def on_button_clicked(b):
+        def on_button_clicked(_):
             pynac_view_area.value = get_pynac_input().__str__()
             dynac_view_area.value = get_dynac_input()
             self.inputBeamLattice[0] = get_pynac_input()
@@ -460,7 +468,7 @@ class Builder:
             data_source.data['yp'] = yp
             data_source.data['z'] = z
             data_source.data['zp'] = zp
-            push_notebook(document = self.beamBuilderPlotDoc, handle = self.beamBuilderPlotHandle)
+            push_notebook(document=self.beamBuilderPlotDoc, handle=self.beamBuilderPlotHandle)
 
         active_widget_list = [beta_x, alpha_x, emit_x, beta_y, alpha_y, emit_y, beta_z, alpha_z, emit_z,
                               energy_offset, x_offset, xp_offset, y_offset, yp_offset, phase_offset,
@@ -469,8 +477,8 @@ class Builder:
         for slider in active_widget_list:
             slider.observe(on_button_clicked)
 
-        pynac_box_label = widgets.Label(value = "Pynac Input", layout = label_layout)
-        dynac_box_label = widgets.Label(value = "Dynac Input", layout = label_layout)
+        pynac_box_label = widgets.Label(value="Pynac Input", layout=label_layout)
+        dynac_box_label = widgets.Label(value="Dynac Input", layout=label_layout)
 
         twiss_controls = HBox([
                 VBox([twiss_x_label, beta_x, alpha_x, emit_x]),
@@ -479,9 +487,11 @@ class Builder:
             ])
         col_layout = Layout(display='flex', flex_flow='column', align_items='stretch')
         other_controls = Box([
-                Box([rest_mass_label, atomic_num_label, charge_label, beam_freq_label, bunch_population_label], layout=col_layout),
+                Box([rest_mass_label, atomic_num_label, charge_label, beam_freq_label, bunch_population_label],
+                    layout=col_layout),
                 Box([rest_mass, atomic_num, charge, beam_freq, bunch_population], layout=col_layout),
-                Box([energy_offset_label, x_offset_label, xp_offset_label, y_offset_label, yp_offset_label, phase_offset_label], layout=col_layout),
+                Box([energy_offset_label, x_offset_label, xp_offset_label,
+                     y_offset_label, yp_offset_label, phase_offset_label], layout=col_layout),
                 Box([energy_offset, x_offset, xp_offset, y_offset, yp_offset, phase_offset], layout=col_layout),
             ], layout=Layout(
                     display='flex',
@@ -495,7 +505,7 @@ class Builder:
                 VBox([dynac_box_label, dynac_view_area])
             ])
 
-        accordion = widgets.Accordion(children = [twiss_controls, other_controls, input_text])
+        accordion = widgets.Accordion(children=[twiss_controls, other_controls, input_text])
         accordion.set_title(0, 'Twiss (to alter the phase-space plots)')
         accordion.set_title(1, 'Beam details (will not alter the phase-space plots)')
         accordion.set_title(2, "Pynac/Dynac input (to copy'n'paste into your own files)")
@@ -544,12 +554,12 @@ class Builder:
         load_lattice_btn.on_click(load_lattice_click)
 
         def add_built_beam_click(_):
-            beamInds = self.sim.get_x_inds('RDBEAM')
-            beamInds += self.sim.get_x_inds('REFCOG')
-            beamInds += self.sim.get_x_inds('INPUT')
-            beamInds += self.sim.get_x_inds('GEBEAM')
-            beamInds = sorted(beamInds, reverse=True)
-            for ele in beamInds:
+            beam_inds = self.sim.get_x_inds('RDBEAM')
+            beam_inds += self.sim.get_x_inds('REFCOG')
+            beam_inds += self.sim.get_x_inds('INPUT')
+            beam_inds += self.sim.get_x_inds('GEBEAM')
+            beam_inds = sorted(beam_inds, reverse=True)
+            for ele in beam_inds:
                 del self.sim.lattice[ele]
             self.sim.lattice = self.inputBeamLattice[:3] + self.sim.lattice
         add_built_beam.on_click(add_built_beam_click)
@@ -564,7 +574,7 @@ class Builder:
 
         def plotit_btn_click(_):
             if not self.firstPlotDone:
-                self.plotitTool = pynplt.NewPynPlt()
+                self.plotitTool = pynPlt.NewPynPlt()
                 self.plotitTool.parseAndOrganise()
                 self.handle0 = self.plotitTool.plotEMITGR(0)
                 # self.handle1 = self.plotitTool.plotENVEL(0)

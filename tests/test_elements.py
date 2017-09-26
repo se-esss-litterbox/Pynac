@@ -5,6 +5,13 @@ import os
 from Pynac.Core import Pynac
 from Pynac import Elements as ele
 
+
+class BasicElementTests(unittest.TestCase):
+    def test_pynacelement_is_abstract(self):
+        with self.assertRaises(TypeError):
+            ele.PynacElement()
+
+
 class ElementManipulationTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 

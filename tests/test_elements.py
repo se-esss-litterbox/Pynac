@@ -11,6 +11,23 @@ class BasicElementTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             ele.PynacElement()
 
+    def test_subclassing_pynacelement_improperly(self):
+        class SubElement(ele.PynacElement):
+            def __init__(self):
+                pass
+        with self.assertRaises(TypeError):
+            SubElement()
+
+    def test_subclassing_pynacelement_properly(self):
+        class SubElement(ele.PynacElement):
+            def __init__(self):
+                pass
+            def from_dynacRepr(self, pynacRepr):
+                pass
+            def dynacRepresentation(self):
+                pass
+        SubElement()
+
 
 class ElementManipulationTest(unittest.TestCase):
     pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))

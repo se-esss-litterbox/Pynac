@@ -5,6 +5,7 @@ the representation expected by Dynac.
 
 from Pynac.DataClasses import Param
 from collections import defaultdict
+import abc  # Abstract Base Class
 
 _dynac2pynac = defaultdict(lambda: 'NotImplemented', {
     'QUADRUPO': 'Quad',
@@ -17,7 +18,17 @@ _dynac2pynac = defaultdict(lambda: 'NotImplemented', {
 })
 
 
-class Quad:
+class PynacElement(metaclass=abc.ABCMeta):
+    @abc.abstractclassmethod
+    def from_dynacRepr(cls, pynacRepr):
+        pass
+
+    @abc.abstractclassmethod
+    def dynacRepresentation(self):
+        pass
+
+
+class Quad(PynacElement):
     """
     A Pynac representation of a quadrupole magnet.
 
@@ -62,7 +73,7 @@ class Quad:
         return s
 
 
-class CavityAnalytic:
+class CavityAnalytic(PynacElement):
     """
     A Pynac representation of a resonant EM cavity (i.e., the ``CAVMC`` model used by Dynac
     to do analytic calculations).
@@ -124,7 +135,7 @@ class CavityAnalytic:
         return s
 
 
-class Drift:
+class Drift(PynacElement):
     """
     A Pynac representation of a drift.
 
@@ -155,7 +166,7 @@ class Drift:
         return s
 
 
-class AccGap:
+class AccGap(PynacElement):
     """
     A Pynac representation of an accelerating gap.
 
@@ -244,7 +255,7 @@ class AccGap:
         return s
 
 
-class Set4DAperture:
+class Set4DAperture(PynacElement):
     def __init__(self, energy, phase, x, y, radius, energyDefnFlag = 0):
         if energyDefnFlag == 1 or energyDefnFlag == 11:
             energyUnit = 'MeV'
@@ -295,7 +306,7 @@ class Set4DAperture:
         return s
 
 
-class Buncher:
+class Buncher(PynacElement):
     def __init__(self, voltage, phase, harmonicNum, apertureRadius):
         self.voltage = Param(val = voltage, unit = 'MV')
         self.phase = Param(val = phase, unit = 'deg')
@@ -331,7 +342,7 @@ class Buncher:
         return s
 
 
-class AccFieldFromFile:
+class AccFieldFromFile(PynacElement):
     def __init__(self, filename, scaleFactor):
         self.filename = filename
         self.scaleFactor = Param(val = scaleFactor, unit = None)

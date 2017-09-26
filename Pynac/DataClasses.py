@@ -7,7 +7,7 @@ from collections import namedtuple
 import warnings
 
 Param = namedtuple('Param', ['val', 'unit'])
-Param.__repr__ = lambda self: str(self.val) + ' ' + str(self.unit)
+Param.__repr__ = lambda self: str(self.val) if self.unit is None else str(self.val) + ' ' + str(self.unit)
 try:
     Param.__doc__ = '''
     A representation of a parameter as a value associated with a unit.

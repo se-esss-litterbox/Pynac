@@ -29,7 +29,7 @@ class BasicElementTests(unittest.TestCase):
         SubElement()
 
 
-class ElementInstantiationTests(unittest.TestCase):
+class ElementInstantiationTests_withInds(unittest.TestCase):
     def setUp(self):
         self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
 
@@ -67,6 +67,46 @@ class ElementInstantiationTests(unittest.TestCase):
         fieldinds = self.pynacInstance.get_x_inds('FIELD')
         field = self.pynacInstance.lattice[fieldinds[0]]
         self.assertIsInstance(field, ele.AccFieldFromFile)
+
+
+class ElementInstantiationTests_withObjects(unittest.TestCase):
+    def setUp(self):
+        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+
+    def test_quad_class(self):
+        quads = self.pynacInstance.get_x_objs('QUADRUPO')
+        for quad in quads:
+            self.assertIsInstance(quad, ele.Quad)
+
+    def test_cavmc_class(self):
+        cavs = self.pynacInstance.get_x_objs('CAVMC')
+        for cav in cavs:
+            self.assertIsInstance(cav, ele.CavityAnalytic)
+
+    def test_drift_class(self):
+        drifts = self.pynacInstance.get_x_objs('DRIFT')
+        for drift in drifts:
+            self.assertIsInstance(drift, ele.Drift)
+
+    def test_cavsc_class(self):
+        cavscs = self.pynacInstance.get_x_objs('CAVSC')
+        for cav in cavscs:
+            self.assertIsInstance(cav, ele.AccGap)
+
+    def test_reject_class(self):
+        apers = self.pynacInstance.get_x_objs('REJECT')
+        for aper in apers:
+            self.assertIsInstance(aper, ele.Set4DAperture)
+
+    def test_buncher_class(self):
+        bunchers = self.pynacInstance.get_x_objs('BUNCHER')
+        for buncher in bunchers:
+            self.assertIsInstance(buncher, ele.Buncher)
+
+    def test_field_class(self):
+        fields = self.pynacInstance.get_x_objs('FIELD')
+        for field in fields:
+            self.assertIsInstance(field, ele.AccFieldFromFile)
 
 
 class ElementManipulationTest(unittest.TestCase):

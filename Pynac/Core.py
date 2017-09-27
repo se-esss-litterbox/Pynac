@@ -117,6 +117,14 @@ class Pynac(object):
         """
         return [i for i, x in enumerate(self.lattice) for y in dynac_type if dynac_from_ele(x) == y]
 
+    def get_x_objs(self, *dynac_type):
+        """
+        Return the indices into the lattice list attribute of elements whose Dynac
+        type matches the input string.  Multiple input strings can be given, either
+        as a comma-separated list or as a genuine Python list.
+        """
+        return [i for i in self.lattice for y in dynac_type if dynac_from_ele(i) == y]
+
     def get_plot_inds(self):
         """
         Return the indices into the lattice list attribute of elements that result

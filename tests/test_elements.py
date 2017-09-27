@@ -63,6 +63,11 @@ class ElementInstantiationTests(unittest.TestCase):
         buncher = self.pynacInstance.lattice[buncherinds[0]]
         self.assertIsInstance(buncher, ele.Buncher)
 
+    def test_field_class(self):
+        fieldinds = self.pynacInstance.get_x_inds('FIELD')
+        field = self.pynacInstance.lattice[fieldinds[0]]
+        self.assertIsInstance(field, ele.AccFieldFromFile)
+
 
 class ElementManipulationTest(unittest.TestCase):
     def setUp(self):

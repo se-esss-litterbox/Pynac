@@ -6,9 +6,6 @@ from contextlib import contextmanager
 from concurrent.futures import ProcessPoolExecutor
 import os
 import shutil
-import glob
-from collections import namedtuple
-import warnings
 from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Layout, Box

@@ -142,6 +142,8 @@ class ElementManipulationTest(unittest.TestCase):
         quad = self.pynacInstance.lattice[quadinds[0]]
         quad.scaleField(0)
         self.assertEqual(quad.B.val, 0)
+        quad.scaleField(10)
+        self.assertEqual(quad.B.val, 0)
 
     def test_setQuad(self):
         quadinds = self.pynacInstance.get_x_inds('QUADRUPO')
@@ -173,6 +175,8 @@ class ElementManipulationTest(unittest.TestCase):
         steererinds = self.pynacInstance.get_x_inds('STEER')
         steerer = self.pynacInstance.lattice[steererinds[0]]
         steerer.scaleField(0)
+        self.assertEqual(steerer.field_strength.val, 0)
+        steerer.scaleField(10)
         self.assertEqual(steerer.field_strength.val, 0)
 
     def test_setSteerer(self):

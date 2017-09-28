@@ -15,6 +15,7 @@ _dynac2pynac = defaultdict(lambda: 'NotImplemented', {
     'REJECT': 'Set4DAperture',
     'BUNCHER': 'Buncher',
     'FIELD': 'AccFieldFromFile',
+    'STEER': 'Steerer',
 })
 
 
@@ -363,4 +364,41 @@ class AccFieldFromFile(PynacElement):
         s = 'AccFieldFile: '
         s += self.filename
         s += ' | Scale: ' + self.scaleFactor.__repr__()
+        return s
+
+
+class Steerer(PynacElement):
+    def __init__(self, field_strength, plane):
+        self.field_strength = Param(
+            val=field_strength,
+            unit='T.m'
+        )
+        self.plane = Param(
+            val=plane,
+            unit='None'
+        )
+
+    @classmethod
+    def from_dynacRepr(cls, pynacRepr):
+        """
+        Construct a ``Steerer`` instance from the Pynac lattice element
+        """
+        f = float(pynacRepr[1][0][0])
+        p = 'HV'[int(pynacRepr[1][0][1])]
+        return cls(f, p)
+
+    def dynacRepresentation(self):
+        """
+        Return the Dynac representation of this steerer instance.
+        """
+        if self.plane.val == 'H':
+            p = 0
+        elif self.plane.val == 'V':
+            p = 1
+        return ['STEER', [[self.field_strength.val], [p]]]
+
+    def __repr__(self):
+        s = 'STEER:'
+        s += ' | f = ' + self.field_strength.__repr__()
+        s += ' | plane = ' + self.plane.__repr__()
         return s

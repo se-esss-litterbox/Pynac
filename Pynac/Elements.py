@@ -60,6 +60,14 @@ class Quad(PynacElement):
         """
         self.B = self.B._replace(val=self.B.val * scalingFactor)
 
+    def setField(self, new_value):
+        """
+        Adjust the field of the magnet by the value of ``scalingFactor``.  The adjustment
+        is multiplicative, so a value of ``scalingFactor = 1.0`` will result in no change
+        of the field.
+        """
+        self.B = self.B._replace(val=new_value)
+
     def dynacRepresentation(self):
         """
         Return the Pynac representation of this quadrupole instance.
@@ -396,6 +404,26 @@ class Steerer(PynacElement):
         elif self.plane.val == 'V':
             p = 1
         return ['STEER', [[self.field_strength.val], [p]]]
+
+    def scaleField(self, scalingFactor):
+        """
+        Adjust the field of the magnet by the value of ``scalingFactor``.  The adjustment
+        is multiplicative, so a value of ``scalingFactor = 1.0`` will result in no change
+        of the field.
+        """
+        self.field_strength = self.field_strength._replace(
+            val=self.field_strength.val * scalingFactor
+        )
+
+    def setField(self, new_value):
+        """
+        Adjust the field of the magnet by the value of ``scalingFactor``.  The adjustment
+        is multiplicative, so a value of ``scalingFactor = 1.0`` will result in no change
+        of the field.
+        """
+        self.field_strength = self.field_strength._replace(
+            val=new_value
+        )
 
     def __repr__(self):
         s = 'STEER:'

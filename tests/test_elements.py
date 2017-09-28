@@ -71,42 +71,66 @@ class ElementInstantiationTests_withInds(unittest.TestCase):
 
 class ElementInstantiationTests_withObjects(unittest.TestCase):
     def setUp(self):
-        self.pynacInstance = Pynac(os.path.join(os.path.dirname(__file__), 'ESS_with_SC_ana.in'))
+        self.pynacInstance = Pynac(os.path.join(
+            os.path.dirname(__file__),
+            'ESS_with_SC_ana.in'
+        ))
 
     def test_quad_class(self):
         quads = self.pynacInstance.get_x_objs('QUADRUPO')
+        if not quads:
+            raise AssertionError('No quads in this lattice')
         for quad in quads:
             self.assertIsInstance(quad, ele.Quad)
 
     def test_cavmc_class(self):
         cavs = self.pynacInstance.get_x_objs('CAVMC')
+        if not cavs:
+            raise AssertionError('No quads in this lattice')
         for cav in cavs:
             self.assertIsInstance(cav, ele.CavityAnalytic)
 
     def test_drift_class(self):
         drifts = self.pynacInstance.get_x_objs('DRIFT')
+        if not drifts:
+            raise AssertionError('No quads in this lattice')
         for drift in drifts:
             self.assertIsInstance(drift, ele.Drift)
 
     def test_cavsc_class(self):
         cavscs = self.pynacInstance.get_x_objs('CAVSC')
+        if not cavscs:
+            raise AssertionError('No quads in this lattice')
         for cav in cavscs:
             self.assertIsInstance(cav, ele.AccGap)
 
     def test_reject_class(self):
         apers = self.pynacInstance.get_x_objs('REJECT')
+        if not apers:
+            raise AssertionError('No quads in this lattice')
         for aper in apers:
             self.assertIsInstance(aper, ele.Set4DAperture)
 
     def test_buncher_class(self):
         bunchers = self.pynacInstance.get_x_objs('BUNCHER')
+        if not bunchers:
+            raise AssertionError('No quads in this lattice')
         for buncher in bunchers:
             self.assertIsInstance(buncher, ele.Buncher)
 
     def test_field_class(self):
         fields = self.pynacInstance.get_x_objs('FIELD')
+        if not fields:
+            raise AssertionError('No quads in this lattice')
         for field in fields:
             self.assertIsInstance(field, ele.AccFieldFromFile)
+
+    def test_steerer_class(self):
+        steerers = self.pynacInstance.get_x_objs('STEERER')
+        if not steerers:
+            raise AssertionError('No steerers in this lattice')
+        for steerer in steerers:
+            self.assertIsInstance(steerer, int)
 
 
 class ElementManipulationTest(unittest.TestCase):

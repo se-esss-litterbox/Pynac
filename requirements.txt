@@ -2,7 +2,7 @@ alabaster==0.7.10
 appdirs==1.4.3
 appnope==0.1.0
 argh==0.26.2
-Babel==2.3.4
+Babel==2.9.1
 bleach==2.0.0
 bokeh==0.12.4
 cycler==0.10.0
